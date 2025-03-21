@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url("/images/banner-image-bg.jpg") no-repeat center center fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        h2 {
+            color: #d63384;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #d63384;
+            border-radius: 5px;
+            text-align: center;
+        }
+        button {
+            background: #d63384;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:disabled {
+            background: #f5a5c0;
+            cursor: not-allowed;
+        }
+        #timer {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+         <%- include('../partials/smallheader') %>
+    <script>
+        // ----------------------------------------------------------------------------------------------------------------------------------
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let storedTime = localStorage.getItem("otpTimer");
+            let lastRequestTime = localStorage.getItem("lastOtpRequest");
+            let currentTime = Date.now();
+            
+            if (!lastRequestTime || (currentTime - lastRequestTime) > 60000) {
+                localStorage.setItem("otpTimer", 60);
+                localStorage.setItem("lastOtpRequest", currentTime);
+            }
+            
+            let remainingTime = parseInt(localStorage.getItem("otpTimer")) || 60;
+            const resendBtn = document.getElementById("resendOtp");
+            const timerDisplay = document.getElementById("timer");
+            
+            function startTimer() {
+                let interval = setInterval(() => {
+                    if (remainingTime > 0) {
+                        remainingTime--;
+                        localStorage.setItem("otpTimer", remainingTime);
+                        timerDisplay.textContent = `Resend OTP in ${remainingTime}s`;
+                    } else {
+                        clearInterval(interval);
+                        resendBtn.disabled = false;
+                        timerDisplay.textContent = "You can now resend OTP";
+                    }
+                }, 1000);
+            }
+            
+            if (remainingTime > 0) {
+                resendBtn.disabled = true;
+                startTimer();
+            } else {
+                resendBtn.disabled = false;
+                timerDisplay.textContent = "You can now resend OTP";
+            }
+        });
+        // ----------------------------------------------------------------------------------------------------------------------------------
+
+        function resendOtp() {
+            const resendBtn = document.getElementById("resendOtp");
+            resendBtn.disabled = true;
+            document.getElementById("timer").textContent = "Sending OTP...";
+            
+            fetch("/resend-email-otp", { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        localStorage.setItem("otpTimer", 60);
+                        localStorage.setItem("lastOtpRequest", Date.now());
+                        location.reload();
+                    } else {
+                        alert("Error resending OTP");
+                        resendBtn.disabled = false;
+                        document.getElementById("timer").textContent = "You can now resend OTP";
+                    }
+                })
+                .catch(() => {
+                    alert("Server error. Please try again later.");
+                    resendBtn.disabled = false;
+                    document.getElementById("timer").textContent = "You can now resend OTP";
+                });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Enter OTP</h2>
+        <form action="/verify-email-otp" method="POST">
+            <input type="text" name="otp" placeholder="Enter OTP" required>
+            <button type="submit">Verify OTP</button>
+        </form>
+        
+        <p id="timer">Resend OTP in 60s</p>
+        <button id="resendOtp" onclick="resendOtp()" disabled>Resend OTP</button>
+    </div>
+</body>
+</html>

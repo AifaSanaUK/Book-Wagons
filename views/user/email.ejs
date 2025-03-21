@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <title>Verify Email</title>
+    <style>
+   
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url("/images/banner-image-bg.jpg") no-repeat center center fixed;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .container:hover {
+            transform: scale(1.02);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #d63384;
+            font-size: 24px;
+        }
+
+   
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d63384;
+            border-radius: 8px;
+            outline: none;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input:focus {
+            border-color: #e84393;
+            box-shadow: 0 0 10px rgba(216, 51, 132, 0.3);
+        }
+
+  
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background: #d63384;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background: #e84393;
+        }
+
+        .container {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/smallheader') %>
+    <div class="container">
+        <h2>Verify Your Email</h2>
+        <form id="verifyEmailForm">
+            <input type="email" id="email" placeholder="Enter your email" required>
+            <button type="submit">Verify</button>
+        </form>
+    </div>
+
+    <script>
+      
+      document.getElementById("verifyEmailForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+
+    const response = await fetch("/email-verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        localStorage.setItem("email", email);  
+        Swal.fire("Success!", "Email Verified!", "success").then(() => {
+            window.location.href = result.redirect;
+        });
+    } else {
+        Swal.fire("Error!", result.message, "error");
+    }
+});
+
+
+
+    </script>
+</body>
+</html>

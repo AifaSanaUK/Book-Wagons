@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter OTP</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url("/images/banner-image-bg.jpg") no-repeat center center fixed;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+        }
+
+        h2 {
+            color: #d63384;
+            font-size: 24px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 2px solid #d63384;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background: #d63384;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #e84393;
+        }
+
+        .resend {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #d63384;
+            cursor: pointer;
+            text-decoration: underline;
+            display: none;
+        }
+
+        .disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/smallheader') %>
+    <div class="container">
+        <h2>Enter OTP</h2>
+        <input type="text" id="otp" placeholder="Enter OTP" required>
+        <button id="validateOtpBtn">Submit OTP</button>
+        <p id="timer">Resend OTP in <span id="countdown">30</span> seconds</p>
+        <p id="resendOtp" class="resend">Resend OTP</p>
+    </div>
+
+    <script>
+
+let timer = 30;
+let countdownElement = document.getElementById("countdown");
+let resendOtpElement = document.getElementById("resendOtp");
+let validateOtpBtn = document.getElementById("validateOtpBtn");
+
+
+resendOtpElement.style.display = "none";
+
+
+function startTimer() {
+    resendOtpElement.style.pointerEvents = "none"; 
+    resendOtpElement.style.opacity = "0.5"; 
+    resendOtpElement.style.display = "block"; 
+
+    let countdown = setInterval(() => {
+        if (timer > 0) {
+            timer--;
+            countdownElement.innerText = timer;
+        } else {
+            clearInterval(countdown);
+            resendOtpElement.style.pointerEvents = "auto"; 
+            resendOtpElement.style.opacity = "1"; 
+            resendOtpElement.innerText = "Resend OTP";
+            resendOtpElement.style.display = "block"; 
+        }
+    }, 1000);
+}
+
+
+startTimer();
+// ---------------------------------------------------------------------------------
+validateOtpBtn.addEventListener("click", async () => {
+    const otp = document.getElementById("otp").value;
+    const email = localStorage.getItem("email");
+    if (!otp) {
+        Swal.fire("Error!", "Please enter OTP!", "error");
+        return;
+    }
+
+    if (!email) {
+        Swal.fire("Error!", "Email not found! Please verify again.", "error");
+        return;
+    }
+
+    const response = await fetch("/otp-verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        Swal.fire("Success!", "OTP Verified!", "success").then(() => {
+            window.location.href = result.redirect; 
+        });
+    } else {
+        Swal.fire("Error!", result.message, "error");
+    }
+});
+
+resendOtpElement.addEventListener("click", async () => {
+    if (timer > 0) return; 
+
+    const email = localStorage.getItem("email");
+
+    const response = await fetch("/otp-resend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        Swal.fire("Success!", "New OTP sent!", "success");
+        timer = 30; 
+        countdownElement.innerText = timer; 
+        resendOtpElement.style.display = "none"; 
+        startTimer(); 
+    } else {
+        Swal.fire("Error!", result.message, "error");
+    }
+});
+
+</script>
+
+ 
+</body>
+</html>

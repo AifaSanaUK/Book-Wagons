@@ -1,0 +1,684 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            background-color: #111;
+            display: flex;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            background: #828282;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            text-align: center;
+        }
+        .profile-section {
+            padding: 20px;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+        .sidebar ul li:hover {
+            background: #150107;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-left: 10px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            width: 90%;
+            margin: 20px auto;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            color: #150107;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            width: 90%;
+        }
+        .customer-table {
+            width: 100%;
+            background: #222;
+            color: white;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .customer-table th, .customer-table td {
+            padding: 15px;
+            border: 1px solid #555;
+            text-align: left;
+        }
+        .customer-table th {
+            background: #333;
+        }
+        .btn-edit, .btn-delete, .btn-list, .btn-offer {
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            color: white;
+            margin-right: 5px;
+        }
+        .btn-edit {
+            background: blue;
+        }
+        .btn-delete {
+            background: red;
+        }
+        .btn-list {
+            background: gray;
+        }
+        .btn-offer {
+            background: orange;
+        }
+        .search-bar {
+            width: 100%;
+            margin: 20px 0;
+            position: relative;
+            display: flex;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 10px 40px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .search-bar i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+        .search-bar button {
+            padding: 10px 20px;
+            border: none;
+            background: #150107;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+        }.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.page-link {
+    padding: 10px;
+    margin: 0 5px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+}
+
+.page-link:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.page-link.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.page-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+
+    </style>
+</head>
+
+<!-- ----------------------------------------------------------------------------------------------------------------------------- -->
+
+
+<body><div class="sidebar">
+    <div class="profile-section">
+        <img src="\images\WhatsApp Image 2025-03-04 at 21.15.51_2d23995d.jpg" alt="Profile Picture" class="profile-pic">
+        <h3>Aifa Sana</h3>
+    </div>
+    <ul>
+        <li><a href="/admin/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+                <li><a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a></li>
+                <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
+                <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
+                <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+                <li><a href="/coupons"><i class="fa-solid fa-tag"></i> Coupons</a></li>
+                <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
+                <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
+                <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+    </ul>
+    <form action="/admin/logout" method="GET">
+        <button type="submit" style="margin-top: 20px; padding: 10px 20px; border-radius: 30px; background: #333; color: white; border: none;">Logout</button>
+    </form>
+</div>
+
+<div class="content">
+    <div class="header">
+        <h1>Category</h1>    
+    </div>
+    <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+
+    <div class="form-container">
+        <div class="search-bar">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="searchName" placeholder="Search...">
+            <button type="button" id="searchButton">Enter</button>
+        </div>
+        <input type="text" id="categoryName" placeholder="Enter category name" class="form-control mb-2">
+        <input type="text" id="categoryDesc" placeholder="Enter category description" class="form-control mb-2">
+        <button onclick="addCategory()" class="btn btn-dark">Add to Category</button>
+    </div>
+
+    <table class="customer-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Offer Price</th>
+                <th>Offer</th>
+                <th>Status</th>
+                <th>List/Unlist</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="categoryTableBody">
+        </tbody>
+    </table>
+    <div class="pagination">
+    <!-- Previous Button -->
+    <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>" class="page-link">Previous</a>
+    <% } else { %>
+        <span class="page-link disabled">Previous</span>
+    <% } %>
+
+    <!-- Page Numbers -->
+    <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="?page=<%= i %>" class="page-link <%= i === currentPage ? 'active' : '' %>">
+            <%= i %>
+        </a>
+    <% } %>
+
+    <!-- Next Button -->
+    <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>" class="page-link">Next</a>
+    <% } else { %>
+        <span class="page-link disabled">Next</span>
+    <% } %>
+</div>
+    
+    
+            
+<!-- ----------------------------------------------------------------------------------------------------------------------------------------------- -->
+<script>
+   
+//search...............................
+let searchToggled = false; 
+
+    document.querySelector(".search-bar button").addEventListener("click", function () {
+        let searchInput = document.getElementById("searchName");
+        let searchValue = searchInput.value.trim().toLowerCase();
+
+        if (!searchToggled) {
+            if (!searchValue) {
+                Swal.fire("Error!", "Please enter a search term!", "error");
+                return;
+            }
+            filterCategories(searchValue);
+            searchToggled = true;
+        } else {
+            resetTable();
+            searchInput.value = ""; 
+            searchToggled = false;
+        }
+    });
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    function filterCategories(searchValue) {
+        const tableBody = document.getElementById("categoryTableBody");
+        tableBody.innerHTML = "";
+        
+        let filteredCategories = categories.filter(cat => cat.name.toLowerCase().startsWith(searchValue));
+        
+        if (filteredCategories.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan='7' style='text-align:center;'>Not Found</td></tr>`;
+            return;
+        }
+        
+        filteredCategories.forEach((cat) => {
+            const row = `<tr>
+                <td>${cat.name}</td>
+                <td>${cat.description}</td>
+                <td>${cat.offerPrice ? cat.offerPrice + '%' : 0}</td>
+                <td>${cat.offer}</td>
+                <td>${cat.status}</td>
+                <td><button class="btn-list" onclick="toggleStatus('${cat._id}')">${cat.status === "Listed" ? "Unlist" : "List"}</button></td>
+                <td>
+                    <button class="btn-offer" onclick="toggleOffer('${cat._id}')">${cat.offer === "Yes" ? "Remove Offer" : "Add Offer"}</button>
+                    <button class="btn-edit" onclick="editCategory('${cat._id}')">Edit</button>
+                    <button class="btn-delete" onclick="deleteCategory('${cat._id}')">Delete</button>
+                </td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    function resetTable() {
+        const tableBody = document.getElementById("categoryTableBody");
+        tableBody.innerHTML = ""; 
+
+        categories.forEach((cat) => {
+            const row = `<tr>
+                <td>${cat.name}</td>
+                <td>${cat.description}</td>
+                <td>${cat.offerPrice ? cat.offerPrice + '%' : 0}</td>
+                <td>${cat.offer}</td>
+                <td>${cat.status}</td>
+                <td><button class="btn-list" onclick="toggleStatus('${cat._id}')">${cat.status === "Listed" ? "Unlist" : "List"}</button></td>
+                <td>
+                    <button class="btn-offer" onclick="toggleOffer('${cat._id}')">${cat.offer === "Yes" ? "Remove Offer" : "Add Offer"}</button>
+                    <button class="btn-edit" onclick="editCategory('${cat._id}')">Edit</button>
+                    <button class="btn-delete" onclick="deleteCategory('${cat._id}')">Delete</button>
+                </td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+
+// search done-------------------------------------------------------------------------------------------------------------------
+
+    let categories = [];
+    let editIndex = null; 
+
+    async function addCategory() {
+    const name = document.getElementById("categoryName").value.trim();
+    const description = document.getElementById("categoryDesc").value.trim();
+
+    if (!name || !description) {
+        Swal.fire("Error!", "All fields are required!", "error");
+        return;
+    }
+
+    const categoryData = { name, description };
+
+    try {
+        const url = editIndex !== null ? `http://localhost:3000/admin/editCategory/${editIndex}` : "http://localhost:3000/admin/addCategory";
+        const method = editIndex !== null ? "PUT" : "POST";
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(categoryData),
+        });
+
+        const responseData = await response.json();
+
+        if (response.ok) {
+            Swal.fire("Success!", editIndex !== null ? "Category updated successfully!" : "Category added successfully!", "success");
+            clearForm();
+            fetchCategories();
+        } else {
+            Swal.fire("Error!", responseData.error || "Failed to save category!", "error");
+        }
+    } catch (err) {
+        Swal.fire("Error!", "Failed to connect to the server!", "error");
+    }
+}
+
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------
+    async function fetchCategories() {
+        try {
+            const response = await fetch(`http://localhost:3000/admin/getCategory`);
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data); 
+                categories = data.cat;
+                updateTable();
+            } else {
+                Swal.fire("Error!", "Failed to fetch categories!", "error");
+            }
+        } catch (err) {
+            Swal.fire("Error!", "Failed to connect to the server!", "error");
+        }
+    }
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+    function updateTable() {
+        const tableBody = document.getElementById("categoryTableBody");
+        tableBody.innerHTML = "";
+
+        categories.forEach((cat, index) => {
+            const row = `<tr>
+                <td>${cat.name}</td>
+                <td>${cat.description}</td>
+                <td>${cat.offerPrice ? cat.offerPrice + '%' :0}</td>
+                <td>${cat.offer}</td>
+                <td>${cat.status}</td>
+                <td><button class="btn-list" onclick="toggleStatus('${cat._id}')">${cat.status === "Listed" ? "Unlist" : "List"}</button></td>
+                <td>
+                    <button class="btn-offer" onclick="toggleOffer('${cat._id}')">${cat.offer === "Yes" ? "Remove Offer" : "Add Offer"}</button>
+                    <button class="btn-edit" onclick="editCategory('${cat._id}')">Edit</button>
+                    <button class="btn-delete" onclick="deleteCategory('${cat._id}')">Delete</button>
+                </td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+
+// ----------------------------------------------------------------------------------------------------------------------------
+
+async function editCategory(categoryId) {
+    console.log(`Fetching category with ID: ${categoryId}`); 
+
+    if (!categoryId) {
+        Swal.fire("Error!", "Invalid category ID!", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3000/admin/editCategory/${categoryId}`);
+        if (response.ok) {
+            const category = await response.json();
+            console.log(`Category fetched: ${JSON.stringify(category)}`); 
+            document.getElementById("categoryName").value = category.name;
+            document.getElementById("categoryDesc").value = category.description;
+            editIndex = categoryId;
+            document.querySelector(".btn-dark").innerText = "Update Category";
+        } else {
+            console.log(`Failed to fetch category details for ID: ${categoryId}`); 
+            Swal.fire("Error!", "Failed to fetch category details!", "error");
+        }
+    } catch (err) {
+        console.error("Error in fetching category:", err); 
+        Swal.fire("Error!", "Failed to connect to the server!", "error");
+    }
+}
+
+
+// --------------------------------------------------------------------------------------------------------------------------------------------
+// Update category
+async function updateCategory() {
+    const name = document.getElementById("categoryName").value;
+    const description = document.getElementById("categoryDesc").value;
+
+    if (!name || !description) {
+        Swal.fire("Error!", "All fields are required!", "error");
+        return;
+    }
+    if (!editIndex) {
+        Swal.fire("Error!", "No category selected for update!", "error");
+        return;
+    }
+
+    console.log(`Updating category with Name: ${name}, Description: ${description}`);
+
+    try {
+        const response = await fetch(`http://localhost:3000/admin/editCategory/${editIndex}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name: name,
+                description: description,
+            }),
+        });
+
+        if (response.ok) {
+            console.log("Category updated successfully"); 
+            Swal.fire("Success!", "Category updated successfully!", "success");
+            fetchCategories();
+            document.getElementById("categoryName").value = "";
+            document.getElementById("categoryDesc").value = "";
+            editIndex = null;
+
+            document.querySelector(".btn-dark").innerText = "Add Category";
+        } else {
+            console.log("Failed to update category");
+            Swal.fire("Error!", "Failed to update category!", "error");
+        }
+    } catch (err) {
+        console.error("Error in updating category:", err); 
+        Swal.fire("Error!", "Failed to connect to the server!", "error");
+    }
+}
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------
+
+async function toggleOffer(categoryId) {
+    console.log(`Toggle offer called for category ID: ${categoryId}`); 
+    const category = categories.find(cat => cat._id === categoryId);
+    if (!category) {
+        console.log("Category not found"); 
+        Swal.fire("Error!", "Category not found!", "error");
+        return;
+    }
+
+    if (category.offer === "No") {
+    
+        Swal.fire({
+            title: "Add Offer Price",
+            input: "number",
+            inputPlaceholder: "Enter offer price",
+            showCancelButton: true,
+            confirmButtonText: "Add",
+            cancelButtonText: "Cancel",
+            inputValidator: (value) => {
+                if (!value) {
+                    return "Offer price is required!";
+                }
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const offerPrice = `${result.value}%`;
+                console.log(`Offer price entered: ${offerPrice}%`); 
+                await setOfferPrice(categoryId, offerPrice);
+                fetchCategories();
+            }
+        });
+    } else {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to remove the offer?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, remove it!",
+            cancelButtonText: "No, keep it"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                console.log("Removing offer");
+                await removeOffer(categoryId);
+                fetchCategories(); 
+            }
+        });
+    }
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------------------
+   
+    async function toggleStatus(categoryId) {
+    try {
+        const response = await fetch("http://localhost:3000/admin/toggleCategoryStatus", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: categoryId }),
+        });
+
+        if (response.ok) {
+            const data = await response.json(); 
+            Swal.fire("Success!", "Category status updated!", "success");
+            fetchCategories(); 
+        } else {
+            Swal.fire("Error!", "Failed to update category status!", "error");
+        }
+    } catch (err) {
+        Swal.fire("Error!", "Failed to connect to the server!", "error");
+    }
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------
+    //
+    async function setOfferPrice(categoryId, offerPrice) {
+        
+    try {
+        offerPrice = parseFloat(offerPrice);
+        if (isNaN(offerPrice)) {
+            Swal.fire("Error!", "Offer price must be a valid number!", "error");
+            return; 
+        }
+
+        if (offerPrice < 1 || offerPrice > 100) {
+            Swal.fire("Error!", "Offer price must be between 1 and 100!", "error");
+            return; 
+        }
+
+        const response = await fetch(`http://localhost:3000/admin/setOffer/${categoryId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                offerPrice: offerPrice,
+            }),
+        });
+
+        if (response.ok) {
+            console.log("Offer price set successfully");
+            Swal.fire("Success!", "Offer price set successfully!", "success");
+        } else {
+            const errorData = await response.json();
+            console.log("Failed to set offer price:", errorData); 
+            Swal.fire("Error!", errorData.error || "Failed to set offer price!", "error");
+        }
+    } catch (err) {
+        console.error("Error in setting offer price:", err); 
+        Swal.fire("Error!", "Failed to connect to the server!", "error");
+    }
+}
+
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+
+async function removeOffer(categoryId) {
+    try {
+        const response = await fetch(`http://localhost:3000/admin/removeOffer/${categoryId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (response.ok) {
+            console.log("Offer removed successfully");
+            Swal.fire("Success!", "Offer removed successfully!", "success");
+        } else {
+            console.log("Failed to remove offer");
+            Swal.fire("Error!", "Failed to remove offer!", "error");
+        }
+    } catch (err) {
+        console.error("Error in removing offer:", err); 
+        Swal.fire("Error!", "Failed to connect to the server!", "error");
+    }
+}
+
+
+// -------------------------------------------------------------------------------------------------------------------------------------------=--
+
+    async function deleteCategory(categoryId) {
+    try {
+        const response = await fetch(`http://localhost:3000/admin/deleteCategory`, {
+            method: "DELETE",  
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: categoryId })  
+        });
+
+        if (response.ok) {
+            
+            fetchCategories();
+        } else {
+            Swal.fire("Error!", "Failed to delete category!", "error");
+        }
+    } catch (err) {
+        Swal.fire("Error!", "Failed to connect to the server!", "error");
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------------
+  
+    function clearForm() {
+        document.getElementById("categoryName").value = "";
+        document.getElementById("categoryDesc").value = "";
+        editIndex = null; 
+        document.querySelector(".btn-dark").innerText = "Add to Category"; 
+    }
+    
+
+    document.addEventListener("DOMContentLoaded", fetchCategories);
+</script>
+</body>
+</html>
+

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Address</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Include SweetAlert2 CSS & JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .address-form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+   
+    <div class="sidebar">
+        <h4 class="text-center text-white">Dashboard</h4>
+        <a href="/userProfile">Profile</a>
+        <a href="/addresses">Address</a>
+        <a href="/order">Order</a>
+        <a href="/wallet">Wallet</a>
+        <a href="/referrals">Referrals</a>
+        <a href="/logoutt">Logout</a>
+    </div>
+
+    <div class="container">
+        <h2 class="text-center">Edit Address</h2>
+        <form id="editAddressForm" class="address-form">
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Address Type:</label>
+                    <input type="text" id="editAddressType" name="addressType" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>Name:</label>
+                    <input type="text" id="editName" name="name" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>City:</label>
+                    <input type="text" id="editCity" name="city" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label>Landmark:</label>
+                    <input type="text" id="editLandMark" name="landMark" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>State:</label>
+                    <input type="text" id="editState" name="state" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>Pincode:</label>
+                    <input type="text" id="editPincode" name="pincode" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label>Phone:</label>
+                    <input type="text" id="editPhone" name="phone" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label>Alternate Phone:</label>
+                    <input type="text" id="editAltPhone" name="altPhone" class="form-control">
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+   
+    document.addEventListener('DOMContentLoaded', () => {
+        const addressId = new URLSearchParams(window.location.search).get('addressId');
+        if (!addressId) {
+            Swal.fire("Error!", "Address ID is missing!", "error");
+            return;
+        }
+
+       
+        fetch(`/getAddressForEdit/${addressId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                  
+                    document.getElementById('editAddressType').value = data.address.addressType;
+                    document.getElementById('editName').value = data.address.name;
+                    document.getElementById('editCity').value = data.address.city;
+                    document.getElementById('editLandMark').value = data.address.landMark;
+                    document.getElementById('editState').value = data.address.state;
+                    document.getElementById('editPincode').value = data.address.pincode;
+                    document.getElementById('editPhone').value = data.address.phone;
+                    document.getElementById('editAltPhone').value = data.address.altPhone;
+                } else {
+                    Swal.fire("Error!", data.message, "error");
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching address data:", error);
+                Swal.fire("Error!", "Something went wrong!", "error");
+            });
+    });
+
+    document.getElementById('editAddressForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const addressId = new URLSearchParams(window.location.search).get('addressId');
+        if (!addressId) {
+            Swal.fire("Error!", "Address ID is missing!", "error");
+            return;
+        }
+
+        const updatedAddress = {
+            addressType: document.getElementById('editAddressType').value.trim(),
+            name: document.getElementById('editName').value.trim(),
+            city: document.getElementById('editCity').value.trim(),
+            landMark: document.getElementById('editLandMark').value.trim(),
+            state: document.getElementById('editState').value.trim(),
+            pincode: document.getElementById('editPincode').value.trim(),
+            phone: document.getElementById('editPhone').value.trim(),
+            altPhone: document.getElementById('editAltPhone').value.trim(),
+        };
+
+       
+        fetch(`/editAddress/${addressId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedAddress)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    title: "Success!",
+                    text: data.message,
+                    icon: "success",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                setTimeout(() => {
+                    window.location.href = "/addresses"; 
+                }, 2000);
+            } else {
+                Swal.fire("Error!", data.message, "error");
+            }
+        })
+        .catch(error => {
+            console.error("Error updating address:", error);
+            Swal.fire("Error!", "Something went wrong!", "error");
+        });
+    });
+</script>
+</body>
+</html>

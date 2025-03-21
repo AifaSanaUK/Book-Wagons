@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    !-- <link rel="stylesheet" href="/public/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            background-color: #111;
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            background: #828282;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            text-align: center;
+        }
+        .profile-section {
+            padding: 20px;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+        .sidebar ul li:hover {
+            background: #150107;
+        }
+        .sidebar ul li .material-icons {
+            margin-right: 10px;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+        .header {
+            background: #ffffff;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            width: calc(100% - 250px);
+            z-index:1000;
+            top:0
+        }
+        h1{
+            color:#150107;
+        }
+        p{
+            color:antiquewhite;
+        }
+        #button {
+            border-radius: 30px;
+            background-color: rgb(141, 141, 141);
+            margin-top: 30px;
+            padding: 10px 20px;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+           
+        }.content {
+    margin-left: 250px; /* Matches sidebar width */
+    padding: 20px;
+    width: calc(100% - 250px); /* Prevents overflow */
+    min-height: 100vh;
+}
+        #button:hover {
+            background-color: black;
+            color: #ffffff;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .search-bar button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background: #444;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .customer-table {
+            width: 100%;
+            background: #222;
+            color: white;
+            border-collapse: collapse;
+        }
+        .customer-table th, .customer-table td {
+            padding: 10px;
+            border: 1px solid #555;
+            text-align: left;
+        }
+        .customer-table th {
+            background: #333;
+        }
+        .btn-block {
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn-unblock {
+            background: green;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile-section">
+            <img src="\images\WhatsApp Image 2025-03-04 at 21.15.51_2d23995d.jpg" alt="Profile Picture" class="profile-pic">
+            <h3>Aifa Sana</h3>
+        </div>
+        <ul>
+            <li><a href="/dash"><span class="material-icons">dashboard</span> Dashboard</a></li>
+            <li><a href="/admin/customers"><span class="material-icons">people</span> Customers</a></li>
+            <li><a href="/admin/category"><span class="material-icons">category</span> category</a></li>
+            <li><a href="/admin/addProducts"><span class="material-icons">add_circle</span> Add Products</a></li>
+            <li><a href="/profuc"><span class="material-icons">inventory_2</span> Products</a></li>
+            <li><a href="/copm"><span class="material-icons">sell</span> Coupons</a></li>
+            <li><a href="/banne"><span class="material-icons">image</span> Banner</a></li>
+            <li><a href="/orders"><span class="material-icons">shopping_cart</span> Orders</a></li>
+            <div>
+                <form action="/admin/logout" method="GET">
+                    <button type="submit" id="button">Logout</button>
+                </form>
+            </div>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="header">
+            <h1>Admin Dashboard</h1>    
+        </div>
+        <p>Welcome to the Admin Dashboard</p>
+        
+        
+    </div>
+</body>
+</html>

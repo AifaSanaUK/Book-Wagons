@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wallet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 15%; /* Sidebar takes 15% of the width */
+            background: #ffeef6;
+            color: rgb(77, 77, 77);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed; /* Fixed position */
+            height: 100vh; /* Full height */
+            overflow-y: auto; /* Scrollable if content overflows */
+        }
+
+        .sidebar h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .sidebar a {
+            color: rgb(77, 77, 77);
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Main Content Styles */
+      
+        .main-content {
+                                flex: 1; /* Take remaining space */
+                                margin-left: 15%; /* Offset for sidebar */
+                                padding: 20px;
+                                margin-top: 10px;
+                                overflow-y: auto; /* Scrollable if content overflows */
+                                display: flex;
+                                justify-content: center; /* Center content horizontally */
+                                align-items: center; /* Center content vertically */
+                                flex-direction: column; /* Stack content vertically */
+                            }
+                    
+                            .container {
+                                max-width: 800px; /* Limit container width */
+                                width: 100%;
+                                padding: 20px;
+                                background-color: #fff;
+                                border-radius: 12px;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                            }
+                    
+                            h2 {
+                                font-size: 24px;
+                                font-weight: 600;
+                                margin-bottom: 20px;
+                                color: #2c3e50;
+                                text-align: center;
+                            }
+                    
+                            .wallet-balance {
+                                text-align: center;
+                                margin-bottom: 30px;
+                            }
+                    
+                            .wallet-balance p {
+                                font-size: 1.5rem;
+                                font-weight: 500;
+                                color: #2c3e50;
+                            }
+                    
+                            .wallet-balance strong {
+                                font-size: 2rem;
+                                color: #4CAF50; /* Green color for balance */
+                            }
+                    
+                            /* Table Container Styles */
+                            .table-container {
+                                width: 100%; /* Full width */
+                                overflow-x: auto; /* Add horizontal scroll if table overflows */
+                            }
+                    
+                            /* Table Styles */
+                            .table {
+                                width: 100%; /* Full width */
+                                border-collapse: collapse; /* Remove spacing between cells */
+                                background-color: #fff; /* White background */
+                                border-radius: 8px; /* Rounded corners */
+                                overflow: hidden; /* Hide overflow for rounded corners */
+                                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow */
+                            }
+                    
+                            .table th,
+                            .table td {
+                                padding: 12px 15px; /* Add padding to cells */
+                                text-align: left; /* Align text to the left */
+                                border-bottom: 1px solid #ddd; /* Add border between rows */
+                            }
+                    
+                            .table th {
+                                background-color: #4CAF50; /* Green background for headers */
+                                color: #fff; /* White text color */
+                                font-weight: 600; /* Bold headers */
+                                text-transform: uppercase; /* Uppercase headers */
+                            }
+                    
+                            .table td {
+                                color: #555; /* Darker text color for rows */
+                            }
+                    
+                            .table tbody tr:hover {
+                                background-color: #f9f9f9; /* Highlight row on hover */
+                            }
+                    
+                            .table tbody tr td:last-child {
+                                font-weight: 500;
+                            }
+                    
+                            .table tbody tr td[style*="color:green"] {
+                                color: #4CAF50 !important; /* Green for credit */
+                            }
+                    
+                            .table tbody tr td[style*="color:red"] {
+                                color: #F44336 !important; /* Red for debit */
+                            }
+                    
+                            .no-transactions {
+                                text-align: center;
+                                color: #777;
+                                font-style: italic;
+                            }
+
+
+    </style>
+</head>
+<body>
+   
+
+  
+    <div class="sidebar">
+        <h4>Dashboard</h4>
+        <a href="/userProfile">Profile</a>
+        <a href="/addressButton" id="addressLink">Address</a>
+        <a href="/order">Order</a>
+        <a href="/wallet">Wallet</a>
+        <a href="/referrals">Referrals</a>
+        <a href="/logoutt">Logout</a>
+    </div>
+
+
+    
+    <div class="main-content">
+        <div class="container">
+         
+            <div class="wallet-balance">
+                <p>Your Wallet Balance:</p>
+                <strong>$<%= walletBalance %></strong>
+            </div>
+
+       
+            <h2>Transaction History</h2>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (transactions.length === 0) { %>
+                            <tr>
+                                <td colspan="4" class="no-transactions">No transactions yet.</td>
+                            </tr>
+                        <% } else { %>
+                            <% transactions.forEach(transaction => { %>
+                                <tr>
+                                    <td><%= new Date(transaction.date).toLocaleDateString() %></td>
+                                    <td><%= transaction.description %></td>
+                                    <td>$<%= transaction.amount.toFixed(2) %></td>
+                                    <td style=`color:<%= transaction.type === 'credit' ? 'green' : 'red' %>;`>
+                                        <%= transaction.type %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

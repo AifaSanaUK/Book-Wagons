@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url("/images/banner-image-bg.jpg") no-repeat center center fixed;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .order-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            margin-top: 50px;
+            margin-left: 50px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            font-size: 16px;
+            color: #555;
+            margin: 5px 0;
+        }
+        .product-list {
+            list-style: none;
+            padding: 0;
+        }
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            text-align: left;
+        }
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .product-info {
+            flex-grow: 1;
+        }
+        .product-info strong {
+            display: block;
+            font-size: 16px;
+            color: #333;
+        }
+        .product-info span {
+            font-size: 14px;
+            color: #666;
+        }
+        .summary {
+            margin-top: 15px;
+            text-align: left;
+        }
+        .summary p {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .cancel-btn {
+            background: red;
+        }
+        .cancel-btn:hover {
+            background: darkred;
+        }
+        .cancelled {
+            background: gray !important;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="order-container">
+        <h2>Order Details</h2>
+        <p><strong>Order ID:</strong> <%= order.orderId %></p>
+        <p><strong>Date:</strong> <%= order.createdOn ? new Date(order.createdOn).toLocaleDateString() : "N/A" %></p>
+        <p><strong>Status:</strong> <span id="orderStatus"><%= order.status %></span></p>
+
+        <h3>Products:</h3>
+        <% if (order.orderedItems && order.orderedItems.length > 0) { %>
+            <ul class="product-list">
+                <% order.orderedItems.forEach(item => { %>
+                    <li class="product-item">
+                        <img src="/<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>" class="product-image">
+                        <div class="product-info">
+                            <strong><%= item.product.productName %></strong>
+                            <span>Qty: <%= item.quantity %> | Price: ₹<%= item.price %> | Total: ₹<%= item.quantity * item.price %></span>
+                        </div>
+                    </li>
+                <% }) %>
+            </ul>
+            <hr>
+            <div class="summary">
+                <p><strong>Subtotal:</strong> ₹<%= order.totalPrice %></p>
+                <p><strong>Discount:</strong> ₹<%= order.discount %></p>
+                <p><strong>Final Amount:</strong> ₹<%= order.finalAmount %></p>
+            </div>
+        <% } else { %>
+            <p>No products found in this order.</p>
+        <% } %>
+
+        <% if (order.status !== 'Cancelled') { %>
+            <button class="btn cancel-btn" id="cancelOrderBtn">Cancel Order</button>
+        <% } else { %>
+            <button class="btn cancelled" disabled>Cancelled</button>
+        <% } %>
+        
+        <button class="btn" onclick="window.location.href='/shop'">Continue Shopping</button>
+    </div>
+
+    <script>
+
+        // -------------------------------------------------------------------------------------------------------
+        document.getElementById("cancelOrderBtn")?.addEventListener("click", function () {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you really want to cancel this order?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, cancel it!",
+                cancelButtonText: "No, keep it"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/cancel-order/<%= order._id %>`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === "Order canceled successfully") {
+                            Swal.fire({
+                                title: "Order Cancelled!",
+                                text: "Your order has been cancelled successfully.",
+                                icon: "success" 
+                            }).then(() => {
+                          
+                                document.getElementById("orderStatus").innerText = "Cancelled";
+
+                     
+                                let cancelBtn = document.getElementById("cancelOrderBtn");
+                                if (cancelBtn) {
+                                    cancelBtn.innerText = "Cancelled";
+                                    cancelBtn.classList.remove("cancel-btn");
+                                    cancelBtn.classList.add("cancelled");
+                                    cancelBtn.disabled = true;
+                                }
+                            });
+                        } else {
+                            Swal.fire("Error", data.message, "error");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        Swal.fire("Error!", "Something went wrong!", "error");
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

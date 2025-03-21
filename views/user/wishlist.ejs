@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist</title>
+    <!-- Include SweetAlert2 CSS and JS -->
+   
+    <style>
+        /* Enhanced CSS styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+            margin-top: 70px;
+        }
+
+        .breadcrumbs a {
+            text-decoration: none;
+            color: #383838;
+            font-size: 15px;
+            margin-top: 20px;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }h2{
+            margin-left: 480px;
+            text-decoration: underline #ffc107;
+        }
+
+        .wishlist-container {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .wishlist-container h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color:#ffc107;
+            font-weight: bold;
+        }
+
+        table img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .add-to-cart-btn, .remove-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #0056b3;
+        }
+
+        .remove-btn {
+           
+            font-size: 15px;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        .no-items {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+        }.remove-btn,.add-to-cart{
+            color: rgb(41, 39, 39);
+            border-radius: 15px;
+            padding: 5px;
+            background-color:#ffc107
+        }
+    
+    </style>
+</head>
+<body>
+
+    <div class="breadcrumbs">
+        <a href="/">Home</a> &gt; <a href="/shop">Shop</a> &gt; <a href="/wishlist">Wishlist</a>
+        <hr>
+    </div>
+
+    <div class="container">
+        <div class="wishlist-container">
+            <h2>Your Wishlist</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                        <% if (wishlist && wishlist.length > 0) { %>
+                            <% for (let product of wishlist) { %>
+                                <<tr id="product-<%= product.productId._id || product.productId %>">
+
+                                    <td>
+                                        <a href="#">
+                                            <img src="<%= product.productImage %>" alt="<%= product.name %>" width="50">
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <%= product.name %>
+                                    </td>
+                                    <td>
+                                      
+                                        <%= product.productId.category ? product.productId.category.name : 'Unknown' %>
+                                    </td>
+                                    <td>
+                                        ₹<%= product.price.toLocaleString('en-IN') %>
+                                    </td>
+                                    <td><button class="add-to-cart" 
+                                        onclick="addToCart('<%= product.productId._id %>', '<%= product.price %>', '<%= product.productImage %>', `<%= product.productId.category ? product.productId.category.name : 'Unknown' %>`)">
+                                        🛒 Add to Cart
+                                    </button>
+
+                                    <button class="remove-btn" onclick="removeFromWishlist('<%= product.productId._id || product.productId %>', '<%= userId %>')">
+                                         Remove
+                                    </button>
+                                    
+                                    </td>
+                                </tr>
+                            <% } %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="4" class="no-items">No items found in your wishlist.</td>
+                            </tr>
+                        <% } %>
+                   
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+    <script>
+ // -------------------------------------------------------------------------------------------------------
+
+
+async function addToCart(productId, price, image, category) {
+    console.log(`Adding product ${productId} to cart...`);
+
+    const userId = '<%= userId %>'; 
+    const quantity = 1; 
+
+    try {
+        const response = await fetch('/add-to-cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, productId, quantity, price, image, category })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error(`Error adding product ${productId} to cart:`, result.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: result.message || 'Something went wrong.',
+            });
+            return;
+        }
+
+        console.log(`Product ${productId} added to cart successfully.`, result.cart);
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Added!',
+            text: 'Item has been added to your cart.',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+     
+        removeFromWishlist(productId, userId, false); 
+
+    } catch (error) {
+        console.error(`Network or server error while adding product ${productId} to cart:`, error);
+    }
+}
+ // -------------------------------------------------------------------------------------------------------
+
+async function removeFromWishlist(productId, userId, showAlert = true) {
+    console.log(`Attempting to remove product ${productId} from wishlist...`);
+
+    try {
+        const response = await fetch('/remove-from-wishlist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: userId, productId: productId })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error(`Error removing product ${productId}:`, result.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: result.message || 'Something went wrong.',
+            });
+            return;
+        }
+
+        console.log(`Product ${productId} removed successfully from wishlist.`);
+        if (showAlert) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Removed!',
+                text: 'Item has been removed from your wishlist.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+     
+        const productRow = document.getElementById(`product-${productId}`);
+        if (productRow) {
+            productRow.remove();
+            console.log(`Product row for ${productId} removed from UI.`);
+        } else {
+            console.warn(`Product row ${productId} not found in DOM.`);
+        }
+
+    } catch (error) {
+        console.error(`Network or server error while removing product ${productId}:`, error);
+    }
+}
+ // -------------------------------------------------------------------------------------------------------
+
+    </script>
+
+</html>

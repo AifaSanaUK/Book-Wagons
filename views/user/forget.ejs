@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Forgot Password</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: url("/images/banner-image-bg.jpg") no-repeat center center fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background-size: cover;
+        }
+
+        .container-box {
+            display: flex;
+            max-width: 800px;
+            width: 90%; /* Responsive width */
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .forgot-password-container {
+            flex: 1;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ff69b4;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .form-control, .btn-send-otp {
+            width: 100%;
+            margin: 0 auto;
+            border-radius: 30px;
+            font-size: 16px;
+            padding: 12px;
+            border: 2px solid #ff69b4;
+            transition: all 0.3s ease-in-out;
+            color: #ff69b4;
+        }
+
+        .btn-send-otp {
+            background: white;
+            color: #ff69b4;
+        }
+
+        .btn-send-otp:hover {
+            background: #ff69b4;
+            color: white;
+        }
+
+        .login-link {
+            display: block;
+            margin-top: 10px;
+            color: #ff69b4;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .container-box {
+                max-width: 90%;
+                transform: scale(0.9);
+            }
+
+            .forgot-password-container {
+                padding: 20px;
+            }
+
+            .form-control, .btn-send-otp {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container-box {
+                max-width: 95%;
+                transform: scale(0.8); 
+            }
+        }
+        .forgot-password-container h2 {
+            color: #ff69b4;
+    
+}
+
+    </style>
+    <%- include('../partials/header') %>
+</head>
+<body>
+
+    <div class="container-box">
+        <div class="forgot-password-container">
+            <h2><i class="color"></i> Forgot Password</h2>
+            <form>
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Enter your name" required>
+                </div>
+                <div class="mb-3">
+                    <input type="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <button type="submit" class="btn btn-send-otp">Send OTP</button>
+                <a href="login.html" class="login-link">Back to Login</a>
+            </form>
+        </div>
+        <div class="image-container">
+            <img src="/images/book.jpg" alt="Books">
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

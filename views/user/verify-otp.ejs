@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="verifyOtpForm">
+        <input type="text" name="otp" id="otpInput" placeholder="Enter OTP" required>
+        <button type="submit">Verify OTP</button>
+    </form>
+    
+    <p id="timerText"></p>
+    <button id="resendOtpBtn" onclick="resendOTP()" disabled>Resend OTP</button>
+    <!-- ---------------------------------------------------------------------------------------- -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    let countdown = 30; 
+    let timer; 
+    
+    function startTimer() {
+        document.getElementById("resendOtpBtn").disabled = true;
+        document.getElementById("timerText").textContent = `Resend OTP in ${countdown}s`;
+    
+        timer = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                document.getElementById("timerText").textContent = `Resend OTP in ${countdown}s`;
+            } else {
+                clearInterval(timer);
+                document.getElementById("timerText").textContent = "";
+                document.getElementById("resendOtpBtn").disabled = false;
+            }
+        }, 1000);
+    }
+    
+    // --------------------------------------------------------------------------------------
+    startTimer();
+    
+    document.getElementById("verifyOtpForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+    
+        const response = await fetch("/password-reset/verify-otp", {
+            method: "POST",
+            body: JSON.stringify(Object.fromEntries(formData)),
+            headers: { "Content-Type": "application/json" }
+        });
+    
+        const data = await response.json();
+        if (data.success) {
+            Swal.fire("Success", data.message, "success").then(() => window.location.href = "/reset-password");
+        } else {
+            Swal.fire("Error", data.message, "error");
+        }
+    });
+    
+    // --------------------------------------------------------------------------------------
+    async function resendOTP() {
+        document.getElementById("resendOtpBtn").disabled = true;
+        countdown = 30; 
+        const response = await fetch("/password-reset/resend-otp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+    
+        const data = await response.json();
+        if (data.success) {
+            Swal.fire("Success", data.message, "success");
+            startTimer(); 
+        } else {
+            Swal.fire("Error", data.message, "error");
+            document.getElementById("resendOtpBtn").disabled = false; 
+        }
+    }
+    
+    
+</script>
+</html>

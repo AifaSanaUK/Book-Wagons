@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Profile</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Include SweetAlert2 CSS & JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Bootstrap JS (Required for Dropdown) -->
+    <style>
+        body {
+            background: url("/images/banner-image-bg.jpg") no-repeat center center fixed;
+        }
+
+        .container-fluid {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px; /* Fixed width for sidebar */
+            background: #ffeef6;
+            color: rgb(77, 77, 77);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed; /* Fixed position */
+            height: 100vh; /* Full height */
+            overflow-y: auto; /* Scrollable if content overflows */
+        }
+
+        .sidebar h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .sidebar a {
+            color: rgb(77, 77, 77);
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #f0f0f0;
+        }
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .profile-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-left: 200px;
+        }
+
+        .profile-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            margin-bottom: 15px;
+        }
+
+        .profile-info label {
+            font-weight: bold;
+        }
+
+        .btn-edit {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-control {
+            width: 100%;
+        }
+
+        .btn {
+            background-color: #ffb7d6;
+            color: #777;
+        }
+
+        .sidebar button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            margin-left: 40px;
+            padding: 40px;
+            margin-top: 60px;
+        }
+
+        .address-boxes {
+            display: none;
+        }
+
+        .address-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 50px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+
+        .address-actions {
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .no-address {
+            text-align: center;
+            color: #777;
+            font-style: italic;
+        }
+
+        #add {
+            margin-left: 690px;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .edit-profile-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            margin-left: 750px;
+            margin-top: 350px;
+            height: 100%;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 40%;
+            max-width: 400px;
+            
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .btn-success {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-success:hover {
+            background-color: darkgreen;
+        }
+
+        .close {
+            float: right;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+<div class="container-fluid">
+    <div class="sidebar">
+        <h4 class="text-center text-white">Dashboard</h4>
+        <a href="/userProfile">Profile</a>
+        <a href="/addressButton" id="addressLink">Address</a>
+        <a href="/order">Order</a>
+        <a href="/wallet">Wallet</a>
+        <a href="/referrals">Referrals</a>
+        <a href="/logoutt">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="profile-container">
+            <div class="text-center">
+                <img src="/images/af.jpg" alt="User Profile Image" class="rounded-circle profile-img">
+                <h2></h2>
+                <p class="text-muted"><%= user ? user.name : 'Guest' %></p>
+            </div>
+
+            <div class="profile-info">
+                <label>Email:</label>
+                <p id="email"><%= user.email %></p>
+                <a href="/changeemail" class="btn btn-light">Change Email</a>
+            </div>
+
+            <div class="profile-info">
+                <label>Phone:</label>
+                <p id="phone"><%= user.phone %></p>
+            </div>
+
+            <a href="/change-password" class="btn btn-light">Change Password</a>
+
+            <div class="edit-profile-container">
+                <button class="btn btn-primary" id="editProfileBtn">Edit Profile</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="editProfileModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 style="font-weight: bolder; color: green;">Edit Profile</h2>
+        <form id="editProfileForm">
+            <div class="form-group">
+                <label for="editName">Name:</label>
+                <input type="text" id="editName" value="<%= user.name %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editPhone">Phone:</label>
+                <input type="text" id="editPhone" value="<%= user.phone %>" required>
+            </div>
+
+            <button type="submit" class="btn btn-success">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+     // -------------------------------------------------------------------------------------------------------
+
+    document.getElementById("editProfileBtn").addEventListener("click", function () {
+        document.getElementById("editProfileModal").style.display = "block";
+    });
+
+    document.querySelector(".close").addEventListener("click", function () {
+        document.getElementById("editProfileModal").style.display = "none";
+    });
+    document.getElementById("editProfileForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const updatedName = document.getElementById("editName").value.trim();
+    const updatedPhone = document.getElementById("editPhone").value.trim();
+
+    const phoneRegex = /^\d{10}$/;
+
+    if (!updatedName || !updatedPhone) {
+        Swal.fire("Error!", "All fields are required!", "error");
+        return;
+    }
+
+    if (!phoneRegex.test(updatedPhone)) {
+        Swal.fire("Error!", "Phone number must be exactly 10 digits!", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch("/update-profile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ name: updatedName, phone: updatedPhone })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            Swal.fire("Success!", "Profile updated successfully!", "success").then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire("Error!", "Failed to update profile", "error");
+        }
+    } catch (error) {
+        Swal.fire("Error!", "Something went wrong!", "error");
+    }
+});
+</script>
+
+</html>

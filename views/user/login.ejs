@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login Page</title>
+    
+    <!-- Bootstrap CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: url("/images/banner-image-bg.jpg") no-repeat center center fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background-size: cover;
+        }
+
+        .container-box {
+            display: flex;
+            max-width: 800px;
+            width: 90%; 
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .login-container {
+            flex: 1;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ff69b4;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .form-control, .btn-login {
+            width: 100%;
+            margin: 0 auto;
+            border-radius: 30px;
+            font-size: 16px;
+            padding: 12px;
+            border: 2px solid #ff69b4;
+            transition: all 0.3s ease-in-out;
+            color: #ff69b4;
+        }
+
+        .btn-login {
+            background: rgb(249, 182, 182);
+            color: #ff69b4;
+        }
+
+        .btn-login:hover {
+            background: #ff69b4;
+            color: rgb(138, 44, 44);
+        }
+
+        .forgot-password {
+            display: block;
+            margin-top: 15px;
+            color: #ff69b4;
+            text-decoration: none;
+        }
+
+        
+        @media (max-width: 768px) {
+            .container-box {
+                max-width: 90%;
+                transform: scale(0.9); 
+            }
+
+            .login-container {
+                padding: 20px;
+            }
+
+            .form-control, .btn-login {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container-box {
+                max-width: 95%;
+                transform: scale(0.8);
+            }
+        }
+    </style>
+    <%- include('../partials/header') %>
+</head>
+<body>
+
+    <div class="container-box">
+        <div class="login-container">
+            <h2>Login</h2>
+            <form id="loginForm" method="post">
+
+                <div class="mb-3">
+                    <input type="email" name="email"  id="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" name="password"  id="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <% if (locals.message && locals.message.length > 0) { %>
+                    <div class="alert alert-danger text-center">
+                        <%= locals.message %>  
+                    </div>
+                <% } %>
+                
+                
+                <button type="submit" id="btn" class="btn btn-login">Login</button>
+                <a href="/forgetPassword" class="forgot-password">Forgot Password?</a>
+                <a href="/signup" class="forgot-password">Create an Account</a>
+            </form>
+        </div>
+        <div class="image-container">
+            <img src="/images/book.jpg" alt="Books">
+        </div>
+    </div>
+</body>
+  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+   document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("loginForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        console.log("Login button clicked!");
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            const response = await fetch("http://localhost:3000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const textResponse = await response.text();
+            console.log("Raw response:", textResponse);
+
+            let result;
+            try {
+                result = JSON.parse(textResponse);
+            } catch (error) {
+                console.error("Response is not valid JSON:", textResponse);
+                throw new Error("Server returned an invalid response.");
+            }
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Login Successful!",
+                    text: "Welcome back!",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = result.redirect; 
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: result.message || "Invalid email or password",
+                });
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Something went wrong!",
+                text: "Please try again later.",
+            });
+        }
+    });
+});
+
+    </script>
+    
+</html>

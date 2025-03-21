@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Add Product</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            background-color: #111;
+            display: flex;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            background: #828282;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            text-align: center;
+        }
+        .profile-section {
+            padding: 20px;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+        .sidebar ul li:hover {
+            background: #150107;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar ul li a i {
+            margin-right: 15px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+        .header {
+            background: #ffffff;
+            padding: 30px;
+            text-align: center;
+            width: calc(100% - 250px);
+            position: fixed;
+            top: 0;
+            left: 250px;
+            z-index: 1000;
+        }
+        .header h1 {
+            color: #000000;
+            margin: 0;
+        }
+        .form-container {
+            margin-top: 80px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-container input, .form-container select, .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .image-upload {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .image-upload input {
+            width: 70%;
+        }
+        .save-button {
+            background: #28a745;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .save-button:hover {
+            background: #218838;
+        }
+        .form-container button.publish {
+            background: #007bff;
+            margin-top: 10px;
+        }
+        .form-container button.publish:hover {
+            background: #0056b3;
+        }
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            display: block;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 90%;
+        }
+        .modal img {
+            max-width: 100%;
+        }
+        table {
+            width: 100%;
+        }
+        table td {
+            padding: 10px;
+        }#cropperImage {
+    max-width: 300px; /* Adjust width as needed */
+    max-height: 300px; /* Adjust height as needed */
+    display: block;
+    margin: auto;
+}
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile-section">
+            <img src="/images/WhatsApp Image 2025-03-04 at 21.15.51_2d23995d.jpg" alt="Profile Picture" class="profile-pic">
+            <h3>Aifa Sana</h3>
+        </div>
+        <ul>
+            <li><a href="/admin/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+                <li><a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a></li>
+                <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
+                <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
+                <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+                <li><a href="/coupons"><i class="fa-solid fa-tag"></i> Coupons</a></li>
+                <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
+                <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
+                <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+        </ul>
+        <form action="/admin/logout" method="GET">
+            <button type="submit" style="margin-top: 20px; padding: 10px 20px; border-radius: 30px; background: #333; color: white; border: none;">Logout</button>
+        </form>
+    </div>
+    <div class="content">
+        <div class="header">
+            <h1>Add New Product</h1>
+        </div>
+        <div class="form-container">
+            <form action="/admin/addProducts" method="POST" enctype="multipart/form-data" id="productForm">
+                <table>
+                    <tr>
+                        <td><label>Product Name</label></td>
+                        <td><input type="text" name="product_name" id="product_name"></td>
+                    </tr>
+                    <tr>
+                        <td><label>Full Description</label></td>
+                        <td><textarea name="description" rows="4" id="dec" required></textarea></td>
+                    </tr>
+                    <tr>
+                        <td><label>Regular Price ($)</label></td>
+                        <td><input type="number" name="regular_price" id="regular_price" required></td>
+                    </tr>
+                    <tr>
+                        <td><label>Sale Price ($)</label></td>
+                        <td><input type="number" name="sale_price" id="sale_price"></td>
+                    </tr>
+                    <tr>
+                        <td><label>Quantity</label></td>
+                        <td><input type="number" name="quantity" id="quantity" required></td>
+                    </tr>
+                    <tr>
+                        <td><label>Category</label></td>
+                        <td>
+                            <select name="category" id="category">
+                                <% if (cat && cat.length > 0) { %>
+                                    <% for (let i = 0; i < cat.length; i++) { %>
+                                        <option value="<%= cat[i].name %>"><%= cat[i].name %></option>
+                                    <% } %>
+                                <% } else { %>
+                                    <option value="">No Categories Available</option>
+                                <% } %>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label>Upload Images</label></td>
+                        <td>
+                            <div class="image-upload">
+                                <input type="file" name="image1" id="image1" accept="image/*" onchange="handleFileSelect(event, 1)">
+                            </div>
+                            <img id="preview1" class="image-preview">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <div class="image-upload">
+                                <input type="file" name="image2" id="image2" accept="image/*" onchange="handleFileSelect(event, 2)">
+                            </div>
+                            <img id="preview2" class="image-preview">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <div class="image-upload">
+                                <input type="file" name="image3" id="image3" accept="image/*" onchange="handleFileSelect(event, 3)">
+                            </div>
+                            <img id="preview3" class="image-preview">
+                        </td>
+                    </tr>
+                </table>
+        
+              
+                <div id="cropperModal" class="modal">
+                    <div class="modal-content">
+                        <img id="cropperImage" src="" style="max-width: 100%;" />
+                        <button type="button" onclick="cropImage()">Crop & Save</button>
+                        <button type="button" onclick="closeCropper()">Cancel</button>
+                    </div>
+                </div>
+        
+                
+                <button type="submit" class="publish">Publish</button>
+            </form>
+        </div>
+        
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<script>       
+
+// -------------------------------------------------------------------------------------------------------------------
+
+      function validateForm() {
+    const productName = document.getElementById("product_name").value.trim();
+    const description = document.getElementById("dec").value.trim();
+    const regularPrice = document.getElementById('regular_price').value.trim();
+    const salePrice = document.getElementById('sale_price').value.trim();
+    const quantity = document.getElementById('quantity').value.trim();
+    const category = document.getElementById('category').value.trim();
+    const image1 = document.getElementById('image1').files.length;
+    const image2 = document.getElementById('image2').files.length;
+    const image3 = document.getElementById('image3').files.length;
+
+    const nameRegex = /^[A-Za-z\s]{4,}$/;-
+    console.log({
+        productName, description, regularPrice, salePrice, quantity, category, image1, image2, image3
+    });
+
+    if (!nameRegex.test(productName)) {
+        Swal.fire("Invalid Name", "Product name must be at least 4 letters and contain only alphabets.", "error");
+        return false;
+    }
+
+    if (description.length < 10) { 
+        Swal.fire("Invalid Description", "Description must be at least 10 characters long.", "error");
+        return false;
+    }
+
+    if (regularPrice === "" || isNaN(regularPrice) || parseFloat(regularPrice) <= 0) {
+        Swal.fire("Invalid Regular Price", "Regular price must be a valid number greater than 0.", "error");
+        return false;
+    }
+
+    if (salePrice !== "" && parseFloat(salePrice) > parseFloat(regularPrice)) {
+        Swal.fire("Invalid Sale Price", "Sale price cannot be greater than regular price.", "error");
+        return false;
+    }
+
+    if (quantity === "" || isNaN(quantity) || parseInt(quantity) <= 0) {
+        Swal.fire("Invalid Quantity", "Quantity must be a valid number greater than 0.", "error");
+        return false;
+    }
+
+    if (!category) {
+        Swal.fire("Category Required", "Please select a category.", "error");
+        return false;
+    }
+
+    if (!image1 && !image2 && !image3) {
+        Swal.fire("Image Required", "Please upload at least one image.", "error");
+        return false;
+    }
+
+    return true;
+}
+
+
+    document.getElementById("productForm").addEventListener("submit", function(event) {
+        if (!validateForm()) {
+            event.preventDefault();
+        }
+    });
+// -------------------------------------------------------------------------------------------------------------------
+    
+let cropper;
+let currentImageIndex;
+
+function handleFileSelect(event, index) {
+    const file = event.target.files[0];
+    if (file) {
+        currentImageIndex = index;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById(`preview${index}`).src = e.target.result; 
+            document.getElementById('cropperImage').src = e.target.result;
+            openCropper();
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function openCropper() {
+    document.getElementById('cropperModal').style.display = 'block';
+    const image = document.getElementById('cropperImage');
+    cropper = new Cropper(image, {
+        aspectRatio: 1, 
+        viewMode: 1
+    });
+}
+function cropImage() {
+    const canvas = cropper.getCroppedCanvas({ width: 440, height: 600 });
+    canvas.toBlob(blob => {
+        const file = new File([blob], `cropped_image_${currentImageIndex}.png`, { type: "image/png" });
+
+    
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById(`image${currentImageIndex}`).files = dataTransfer.files;
+
+     
+        document.getElementById(`preview${currentImageIndex}`).src = URL.createObjectURL(blob);
+
+        closeCropper();
+    });
+}
+
+
+function closeCropper() {
+    document.getElementById('cropperModal').style.display = 'none';
+    cropper.destroy();
+}
+// -------------------------------------------------------------------------------------------------------------------
+
+function clearForm() {
+    document.getElementById("product_name").value = "";
+    document.getElementById("dec").value = "";
+    document.getElementById("regular_price").value = "";
+    document.getElementById("sale_price").value = "";
+    document.getElementById("quantity").value = "";
+    document.getElementById("category").selectedIndex = 0;
+
+    for (let i = 1; i <= 3; i++) {
+        let fileInput = document.getElementById(`image${i}`);
+        let imgPreview = document.getElementById(`preview${i}`);
+
+        fileInput.value = "";  
+        imgPreview.src = "";   
+
+        localStorage.removeItem(`croppedImage_${i}`);
+        localStorage.removeItem(`imageName_${i}`);
+    }
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+function showSuccessMessage() {
+    Swal.fire({
+        title: "Success!",
+        text: "Product added successfully!",
+        icon: "success",
+        confirmButtonText: "OK"
+    }).then(() => {
+        clearForm();  
+        localStorage.clear(); 
+        sessionStorage.removeItem("imagesLoaded"); 
+        window.location.reload(); 
+    });
+}
+
+// -------------------------------------------------------------------------------------------------------------------
+document.getElementById("productForm").addEventListener("submit", async function(event) {
+    event.preventDefault(); 
+
+    if (!validateForm()) {
+        return; 
+    }
+
+    const formData = new FormData(this);
+
+    try {
+        const response = await fetch("/admin/addProducts", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.message === "Product added successfully!") {
+            showSuccessMessage();
+        } else {
+            Swal.fire("Error", "Failed to add product.", "error");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        Swal.fire("Error", "Something went wrong.", "error");
+    }
+});
+
+
+// -------------------------------------------------------------------------------------------------------------------
+                      </script>
+                        
+                    </html>

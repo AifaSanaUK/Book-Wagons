@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #111;
+            display: flex;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            background: #828282;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            text-align: center;
+        }
+        .profile-section {
+            padding: 20px;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+        .sidebar ul li:hover {
+            background: #150107;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar ul li a i {
+            margin-right: 15px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+        
+        .header {
+            background: #ffffff;
+            padding: 30px;
+            text-align: center;
+            width: calc(100% - 250px);
+            position: fixed;
+            top: 0;
+            left: 250px;
+            z-index: 1000;
+        }
+        .header h1 {
+            color: #000000;
+            margin: 0;
+        }
+        #button {
+            border-radius: 30px;
+            background-color: rgb(141, 141, 141);
+            margin-top: 30px;
+            padding: 10px 20px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #button:hover {
+            background-color: black;
+            color: #ffffff;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        td img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+        .action-btns {
+            display: flex;
+            justify-content: center;
+        }
+        .action-btns button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        .action-btns button:hover {
+            background-color: #c0392b;
+        }
+        .status-symbol {
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .status-active {
+            color: green;
+        }
+        .status-inactive {
+            color: red;
+        }
+        .add-banner-btn {
+            display: block;
+            margin: 30px auto;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .add-banner-btn:hover {
+            background-color: #2980b9;
+        }
+        tr{
+            color: white;
+        }th{
+            color:#000000
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile-section">
+            <img src="/images/WhatsApp Image 2025-03-04 at 21.15.51_2d23995d.jpg" alt="Profile Picture" class="profile-pic">
+            <h3>Aifa Sana</h3>
+        </div>
+        <ul>
+            <li><a href="/admin/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+                <li><a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a></li>
+                <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
+                <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
+                <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+                <li><a href="/coupons"><i class="fa-solid fa-tag"></i> Coupons</a></li>
+                <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
+                <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
+                <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+            <div>
+                <form action="/admin/logout" method="GET">
+                    <button type="submit" id="button">Logout</button>
+                </form>
+            </div>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="header">
+            <h1>Banner</h1>    
+        </div>
+    
+     
+        <button class="add-banner-btn">Add Banner</button>
+      
+        <div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Active</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  
+                    <% if (locals.data) { %>
+                        <% for (let i = 0; i < data.length; i++) { %>
+                    
+                     
+                        <tr>
+                            <td><img src="/uploads/bannerImages/<%= data[i].image %>" alt="Banner Image">
+                             
+                            </td>
+                         
+
+                            <td><%= data[i].title %></td>
+                            <td><%= data[i].description %></td>
+                            <td>
+                                <% if (data[i].startDate < Date.now() && data[i].endDate > Date.now()) { %>
+                                    <span class="status-symbol status-active">&#x2714;</span>
+                                <% } else { %>
+                                   
+                                    <span class="status-symbol status-inactive">&#x2716;</span>
+                                <% } %>
+                            </td>
+                            <td class="action-btns">
+                                <a href="/admin/deleteBanner?id=<%= data[i]._id %>">
+                                    <button>Delete</button>
+                                </a>
+                            </td>
+                        </tr>
+                    
+                        <% } %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="5" style="text-align:center;">No Banner Found</td>
+                        </tr>
+                    <% } %>
+                    
+                    </tbody>
+                    </table>
+                    <button class="add-banner-btn"><a href="/admin/addBanner" style="color:white;">Add Banner</a></button>
+
+        </div>
+    </div>
+</body>
+</html>

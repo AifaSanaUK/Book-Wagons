@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.productName %> - Product Details</title>
+    <link rel="stylesheet" href="/styles.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ddd;
+            background-size: cover;
+        }
+
+        /* Header Adjustment */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            margin-top: 80px; /* Adjusted for header */
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #666;
+            background: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .breadcrumbs a {
+            color: #009688;
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        /* Product Container */
+        .product-container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Left Section - Product Images */
+        .product-images {
+            flex: 1;
+            text-align: center;
+        }
+
+        .main-image {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+            padding: 15px;
+            position: relative;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease-in-out;
+            cursor: zoom-in;
+        }
+
+        .main-image.zoom img {
+            transform: scale(1.5);
+            cursor: zoom-out;
+        }
+
+        .small-images {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .small-images img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .small-images img:hover {
+            border-color: #009688;
+            transform: scale(1.1);
+        }
+
+        /* Right Section - Product Details */
+        .product-details {
+            flex: 1;
+            padding-left: 40px;
+        }
+
+        .product-details h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .brand {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .rating {
+            font-size: 18px;
+            color: gold;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 24px;
+            color: #009688;
+            font-weight: bold;
+        }
+
+        .price s {
+            color: #888;
+            font-size: 18px;
+        }
+
+        .offers {
+            font-size: 16px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features li {
+            font-size: 16px;
+            margin: 8px 0;
+        }
+
+        .availability {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .btn {
+            background-color: #009688 !important;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #00796b;
+        }
+
+        /* Description Section */
+        .description {
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .description h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .description p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Related Products Section */
+        .related-products {
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .related-products h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .related-products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .related-product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .related-product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .related-product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .related-product-card h3 {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .related-product-card .price {
+            font-size: 16px;
+            color: #009688;
+            font-weight: bold;
+        }
+
+        .related-product-card .btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/header') %>
+
+    
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> > 
+        <a href="/shop">Shop</a> > 
+        <span><%= product.productName %></span>
+       
+    </nav>
+
+
+    <div class="product-container">
+     
+        <div class="product-images">
+           
+            <div class="main-image" id="mainImageContainer">
+                <img id="mainImage" src="/<%= product.productImage[0] %>" alt="Main Image" onclick="toggleZoom()">
+            </div>
+
+          
+            <div class="small-images">
+                <% for(let i = 0; i < product.productImage.length && i < 4; i++) { %>
+                    <img src="/<%= product.productImage[i] %>" alt="Thumbnail <%= i + 1 %>" onclick="changeMainImage(this)">
+                <% } %>
+            </div>
+        </div>
+
+    
+        <div class="product-details">
+            <h1><%= product.productName %></h1>
+            <p class="brand"><strong>Genre: <a href="#"><%= product.category.name %></a></strong></p>
+            <div class="rating">
+                ⭐⭐⭐⭐⭐ (25 reviews)
+            </div>
+            <p class="price">Price: ₹<%= product.salePrice.toLocaleString('en-IN') %></p>
+            <p class="price">Regular Price: <s>₹<%= product.regularPrice.toLocaleString('en-IN') %></s></p>
+            <p class="offers">
+                <% if(!totalOffer) { %>
+                    No offers
+                <% } else { %>
+                    <%= totalOffer %>% Offer!
+                <% } %>
+            </p>
+            <p><%= product.description %></p>
+            <ul class="features">
+               
+                <li>💰 Cash on Delivery available</li>
+            </ul>
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" value="1" min="1" max="<%= product.quantity %>">
+            <button class="btn add-to-cart" onclick="addToCart('<%= product._id %>', '<%= product.salePrice %>','<%=product.productImage[0]%>','<%= product.category.name %>')">🛒 Add to Cart</button>
+            <p class="availability"><strong>Availability:</strong> <%= product.quantity %> in stock</p>
+        </div>
+    </div>
+
+    
+    <div class="related-products">
+        <h2>Related Products</h2>
+        <div class="related-products-grid">
+            <% if (relatedProducts && relatedProducts.length > 0) { %>
+                <% relatedProducts.forEach(relatedProduct => { %>
+                    <div class="related-product-card">
+                        <img src="/<%= relatedProduct.productImage[0] %>" alt="<%= relatedProduct.productName %>">
+                        <h3><%= relatedProduct.productName %></h3>
+                        <p class="price">₹<%= relatedProduct.salePrice.toLocaleString('en-IN') %></p>
+                        <a href="/productDetails?id=<%= relatedProduct._id %>" class="btn">View Details</a>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>No related products found.</p>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+         // -------------------------------------------------------------------------------------------------------
+
+        function toggleZoom() {
+            const mainImageContainer = document.getElementById("mainImageContainer");
+            mainImageContainer.classList.toggle("zoom");
+        }
+
+        function changeMainImage(thumbnail) {
+            document.getElementById("mainImage").src = thumbnail.src;
+        }
+       
+
+        async function addToCart(productId, price, image,category) { 
+        const userId = "<%= userId %>";
+        const quantity = 1; 
+
+        try {
+            const response = await fetch('/add-to-cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, productId, quantity, price,image,category }) 
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert('Item added to cart!');
+          
+            } else {
+                console.error('Backend Error:', data); 
+                alert(data.message || 'Failed to add item to cart');
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+        }
+    }
+    
+    </script>
+</body>
+</html>

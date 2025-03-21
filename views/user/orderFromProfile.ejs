@@ -1,0 +1,285 @@
+\<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px; /* Fixed width for sidebar */
+            background: #ffeef6;
+            color: rgb(77, 77, 77);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed; /* Fixed position */
+            height: 100vh; /* Full height */
+            overflow-y: auto; /* Scrollable if content overflows */
+        }
+
+        .sidebar h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .sidebar a {
+            color: rgb(77, 77, 77);
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1; /* Take remaining space */
+            margin-left: 250px; /* Offset for sidebar */
+            padding: 20px;
+            overflow-y: auto; /* Scrollable if content overflows */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        /* Order Card Styles */
+        .order-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+       
+        .order-card h4 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        .order-card h4 strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .order-card table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .order-card th,
+        .order-card td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .order-card th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .order-card td {
+            color: #555;
+        }
+
+        .order-card img {
+            border-radius: 8px;
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .order-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 15px;
+            color: #2c3e50;
+        }
+
+        .order-card h3 strong {
+            color: #27ae60;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .cancel-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #c0392b;
+        }
+
+        .track-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .track-btn:hover {
+            background: #2980b9;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .order-card table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .order-card th,
+            .order-card td {
+                min-width: 120px;
+            }
+        }.invoice-icon{
+          font-size: 20px;
+          color: grey;
+          text-decoration: none;
+          margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h4>Dashboard</h4>
+        <a href="/userProfile">Profile</a>
+        <a href="/addressButton" id="addressLink">Address</a>
+        <a href="/order">Order</a>
+        <a href="/wallet">Wallet</a>
+        <a href="/referrals">Referrals</a>
+        <a href="/logoutt">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <h2>My Orders</h2>
+            <% orders.forEach(order => { %>
+                <div class="order-card">
+                    <h4>
+                        <strong>Order ID:</strong> <%= order.orderId %> | 
+                        <strong>Date:</strong> <%= order.createdOn.toLocaleDateString() %> | 
+                        <strong>Status:</strong> <span style=`color:<%= order.status === 'Delivered' ? '#27ae60' : order.status === 'Cancelled' ? '#e74c3c' : '#3498db' %>`><%= order.status %></span>
+                        
+                      <a href="/generate-invoice/<%= order._id %>" class="invoice-icon">
+                            <i class="fas fa-file-download"></i>
+                        </a>
+                    </h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% order.orderedItems.forEach(item => { %>
+                                <tr>
+                                    <td><img src="<%= item.product.productImage[0] %>" alt="Product Image"></td>
+                                    <td><%= item.product.productName %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td>₹<%= item.price %></td>
+                                    <td>₹<%= item.quantity * item.price %> </td>
+                                    
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                    <h3><strong>Grand Total:</strong> ₹<%= order.finalAmount %></h3><a href="/order/tracking/<%= order.orderId %>" class="btn btn-primary">View Details</a
+                   
+                    <% if (order.status === 'Shipped') { %>
+                        <button class="btn track-btn" onclick="trackOrder('<%= order.orderId %>')">Track Order</button>
+                    <% } %>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <script>
+        function cancelOrder(orderId) {
+            if (confirm("Are you sure you want to cancel this order?")) {
+                fetch(`/cancel-order/${orderId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Order canceled successfully!");
+                            window.location.reload();
+                        } else {
+                            alert("Failed to cancel order. Please try again.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred. Please try again.");
+                    });
+            }
+        }
+
+        function trackOrder(orderId) {
+            alert(`Tracking order: ${orderId}`);
+            // Add tracking logic here
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Profile</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Include SweetAlert2 CSS & JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .container-fluid {
+            display: flex;
+        }.container{
+            padding: 100px;
+        }
+
+        .sidebar {
+            width: 170px; /* Fixed width for sidebar */
+            background: #ffeef6;
+            color: rgb(77, 77, 77);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed; /* Fixed position */
+            height: 100vh; /* Full height */
+            overflow-y: auto; /* Scrollable if content overflows */
+        }
+
+        .sidebar h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .sidebar a {
+            color: rgb(77, 77, 77);
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .profile-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 90px;
+        }
+
+        .address-form {
+            margin-top: 60px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h4 class="text-center text-white">Dashboard</h4>
+        <a href="/userProfile">Profile</a>
+        <a href="addressButton" id="addressLink">Address</a>
+        <a href="/order">Order</a>
+        <a href="/wallet">Wallet</a>
+        <a href="/referrals">Referrals</a>
+        <a href="/logoutt">Logout</a>
+    </div>
+    
+    
+    <div class="container mt-5">
+        <h2 class="text-center"></h2>
+        <form id="addressForm" action="/addAddress" method="post">
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Address Type:</label>
+                    <input type="text" id="addressType" name="addressType" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>Name:</label>
+                    <input type="text" id="name"name="name" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>City:</label>
+                    <input type="text" id="city" name="city" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label>Landmark:</label>
+                    <input type="text" id="landmark" name="landMark" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>State:</label>
+                    <input type="text" id="state" name="state" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>Pincode:</label> 
+                    <input type="text" id="pincode" name="pincode" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label>Phone:</label>
+                    <input type="text" id="phone" name="phone" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label>Alternate Phone:</label>
+                    <input type="text" id="altPhone" name="altPhone" class="form-control">
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success" onclick="submitAddress()">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+    <script>
+        // ----------------------------------------------------------------------------------------------------------------------------------
+
+   document.getElementById('addressForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            const addressType = document.getElementById("addressType").value.trim();
+            const name = document.getElementById("name").value.trim();
+            const city = document.getElementById("city").value.trim();
+            const landMark = document.getElementById("landmark").value.trim();
+            const state = document.getElementById("state").value.trim();
+            const pincode = document.getElementById("pincode").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const altPhone = document.getElementById("altPhone").value.trim();
+
+            if (!addressType || !name || !city || !landMark || !state || !pincode || !phone || !altPhone) {
+                Swal.fire("Error!", "All fields are required!", "error");
+                return;
+            }
+
+            if (!/^\d{6}$/.test(pincode)) {
+                Swal.fire("Error!", "Pincode must be a 6-digit number!", "error");
+                return;
+            }
+
+            if (!/^\d{10}$/.test(phone)) {
+                Swal.fire("Error!", "Phone number must be 10 digits!", "error");
+                return;
+            }
+
+            if (!/^\d{10}$/.test(altPhone)) {
+                Swal.fire("Error!", "Alternate phone number must be 10 digits!", "error");
+                return;
+            }
+
+            if (phone === altPhone) {
+                Swal.fire("Error!", "Phone and Alternate Phone must be different!", "error");
+                return;
+            }
+
+          
+            fetch("/addAddress", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ addressType, name, city, landMark, state, pincode, phone, altPhone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: "Success!",
+                        text: data.message,
+                        icon: "success",
+                        timer: 2000, 
+                        showConfirmButton: false
+                    });
+
+                    setTimeout(() => {
+                        window.location.href = data.redirectUrl; 
+                    }, 2000);
+                } else {
+                    Swal.fire("Error!", data.message, "error");
+                }
+            })
+            .catch(error => {
+                Swal.fire("Error!", "Something went wrong!", "error");
+            });
+        });
+    </script>
+</body>
+</html>

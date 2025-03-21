@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2, h3, h4 {
+            color: #444;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .order-summary, .payment-method {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .order-summary p, .delivery-address p {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .order-summary strong {
+            color: #333;
+        }
+
+        .payment-method {
+            text-align: center;
+        }
+
+        .payment-method button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .payment-method button:hover {
+            background-color: #0056b3;
+        }
+
+        .delivery-address {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #addressDetails {
+            font-size: 16px;
+            color: #555;
+        }
+
+.breadcrumbs {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #777; /* Grey color for breadcrumbs */
+}
+.breadcrumbs a {
+    text-decoration: none;
+    color: #777; /* Grey color for breadcrumbs */
+}
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}
+    </style>
+</head>
+<body>
+    <div class="breadcrumbs">
+        <a href="/">Home</a> &gt; 
+        <a href="/shop">Shop</a> &gt; 
+        <a href="/cart">Cart</a>&gt; 
+        <a href="/checkout">Chekout</a>&gt; 
+        <a href="/payment">Payment</a>
+    </div>
+    <br> <!-- Line break below breadcrumbs -->
+
+    <div class="container">
+        <h2>Payment</h2>
+        
+        <!-- Order Summary -->
+       
+            <!-- Order Summary -->
+<div class="order-summary">
+    <h3>Order Summary</h3>
+     <!-- This will now show product names & quantity -->
+    <p><strong>Original Total:</strong> ₹<span id="originalTotal"><%= totalAmount %></span></p>
+    <p><strong>Coupon Applied:</strong> <span id="couponApplied">None</span></p>
+    <p><strong>Discount:</strong> ₹<span id="discountAmount">0</span></p>
+    <p><strong>Final Payable Amount:</strong> ₹<span id="finalPayable"><%= totalAmount %></span></p>
+</div>
+
+        
+        <!-- Payment Method -->
+        <div class="payment-method">
+            <h3>Choose Payment Method</h3>
+            
+            <!-- Delivery Address -->
+            <h2>Choose Payment Method</h2>
+<p><b>Final Payable Amount:</b> ₹<%= totalAmount %></p>
+
+<h3>Delivery Address</h3>
+<p><b><%= selectedAddress.name %></b></p>
+<p><%= selectedAddress.addressLine %>, <%= selectedAddress.city %>, <%= selectedAddress.state %>, <%= selectedAddress.pincode %></p>
+<p>Phone: <%= selectedAddress.phone %></p>
+
+<button onclick="processPayment('upi')" class="btn btn-success">Pay Using UPI</button>
+            <button onclick="processPayment('cod')" class="btn btn-secondary">Cash on Delivery</button>
+            <button onclick="processPayment('wallet')" class="btn btn-warning">Wallet</button>
+        </div>
+    </div>
+
+    <script>
+        // Fetch Payment Data
+
+        const processPayment = (paymentMethod) => {
+    let cartItems = JSON.parse(localStorage.getItem("cart")) || []; // Retrieve cart from localStorage
+    let totalPrice = localStorage.getItem("totalPrice") || 0;
+    let finalAmount = localStorage.getItem("finalAmount") || 0;
+    let selectedAddress = JSON.parse(localStorage.getItem("selectedAddress")); // Retrieve selected address
+
+    if (!selectedAddress) {
+        console.error("No address selected!");
+        Swal.fire("Error", "Please select a delivery address before placing the order.", "error");
+        return; // Prevent processing without an address
+    }
+
+    if (cartItems.length === 0) {
+        console.error("Cart is empty!");
+        Swal.fire("Error", "Your cart is empty. Add items before proceeding.", "error");
+        return; // Prevent processing empty orders
+    }
+
+    fetch("/place-order", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            items: cartItems,
+            totalAmount: totalPrice,
+            finalAmount: finalAmount,
+            paymentMethod: paymentMethod,
+            selectedAddress: selectedAddress, // ✅ Fix: Ensure address is included
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("✅ Order placed successfully:", data);
+            window.location.href = `/order-success?userName=${encodeURIComponent(data.userName)}&orderId=${data.orderId}`;
+        } else {
+            Swal.fire("Error", data.message || "Order placement failed. Try again!", "error");
+        }
+    })
+    .catch(error => {
+        console.error("❌ Payment processing error:", error);
+        Swal.fire("Error", "Something went wrong. Please try again!", "error");
+    });
+};
+
+
+
+
+
+        async function fetchPaymentData() {
+    try {
+        const response = await fetch('/get-payment-data');
+        const data = await response.json();
+
+        if (!response.ok || !data.paymentData) {
+            throw new Error(data.message || "Payment data is missing");
+        }
+
+        console.log("Fetched Payment Data:", data.paymentData); // Debugging
+
+        // Update UI
+        document.getElementById("originalTotal").innerText = data.paymentData.totalAmount.toFixed(2);
+        document.getElementById("finalPayable").innerText = data.paymentData.finalAmount.toFixed(2);
+        document.getElementById("discountAmount").innerText = data.paymentData.discount.toFixed(2);
+        document.getElementById("couponApplied").innerText = data.paymentData.coupon || "None";
+
+    } catch (error) {
+        console.error("Error fetching payment data:", error);
+        Swal.fire("Error", "Failed to load payment details. Please try again.", "error");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", fetchPaymentData);
+
+    </script>
+</body>
+</html>

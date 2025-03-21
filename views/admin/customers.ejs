@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            background-color: #111;
+            display: flex;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            background: #828282;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            text-align: center;
+        }
+        .profile-section {
+            padding: 20px;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+        .sidebar ul li:hover {
+            background: #150107;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar ul li a i {
+            margin-right: 15px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            width: 90%;
+            margin: 20px auto;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            color: #150107;
+            margin: 0;
+        }
+        #button {
+            border-radius: 30px;
+            background-color: rgb(141, 141, 141);
+            margin-top: 30px;
+            padding: 10px 20px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #button:hover {
+            background-color: black;
+            color: #ffffff;
+        }
+        .search-bar {
+            width: 100%;
+            margin: 20px 0;
+            position: relative;
+            display: flex;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 10px 40px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .search-bar i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+        .search-bar button {
+            padding: 10px 20px;
+            border: none;
+            background: #150107;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        .customer-table {
+            width: 100%;
+            background: #222;
+            color: white;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .customer-table th, .customer-table td {
+            padding: 25px;
+            border: 1px solid #555;
+            text-align: left;
+        }
+        .customer-table th {
+            background: #333;
+        }
+        .btn-block {
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn-unblock {
+            background: green;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile-section">
+            <img src="/images/WhatsApp Image 2025-03-04 at 21.15.51_2d23995d.jpg" alt="Profile Picture" class="profile-pic">
+            <h3>Aifa Sana</h3>
+        </div>
+        <ul>
+            <li><a href="/admin/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+                <li><a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a></li>
+                <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
+                <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
+                <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+                <li><a href="/coupons"><i class="fa-solid fa-tag"></i> Coupons</a></li>
+                <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
+                <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
+                <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+            <div>
+                <form action="/admin/logout" method="GET">
+                    <button type="submit" id="button">Logout</button>
+                </form>
+            </div>
+        </ul>
+    </div>    <div class="content">
+        <div class="header">
+            <h1>Customer Management</h1>    
+        </div>
+        <div class="search-bar">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="searchName" placeholder="Search...">
+            <button type="button" id="searchButton">Enter</button>
+        </div>
+        <table class="customer-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone No</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (typeof data !== 'undefined' && data.length > 0) { %>
+                    <% data.forEach(user => { %>
+                        <tr>
+                            <td><%= user.name %></td>
+                            <td><%= user.email %></td>
+                            <td><%= user.phone || "N/A" %></td>
+                            <td>
+                                <% if (!user.isBlocked) { %>
+                                    <button class="btn-block" onclick="confirmAction('block', '<%= user._id %>')">Block</button>
+                                <% } else { %>
+                                    <button class="btn-unblock" onclick="confirmAction('unblock', '<%= user._id %>')">Unblock</button>
+                                <% } %>
+                            </td>
+                            
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="4">No customers found.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+            
+        </table>
+
+       
+        <div class="container mt-3">
+            <nav aria-label="Page Navigation">
+                <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
+                    <% if (typeof totalPages !== 'undefined' && totalPages > 0) { %>
+                        <% for(let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%=(i === currentPage) ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                    <% } else { %>
+                        <li class="page-item disabled">
+                            <span class="page-link">No Pages Available</span>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+        
+    </div>
+</body>
+    <script>
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        document.querySelector(".search-bar button").addEventListener("click", function () {
+            let searchValue = document.getElementById("searchName").value.trim();
+            window.location.href = `/customers?search=${searchValue}`;
+
+            
+        });
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    function confirmAction(action, id) {
+    let actionText = action === 'block' ? "Block" : "Unblock";
+    let confirmButtonColor = action === 'block' ? "#d33" : "#3085d6";
+
+    Swal.fire({
+        title: `Are you sure?`,
+        text: `You are about to ${actionText.toLowerCase()} this user.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: confirmButtonColor,
+        cancelButtonColor: "#aaa",
+        confirmButtonText: `Yes, ${actionText} it!`
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `/admin/${action}Customer?id=${id}`;
+        }
+    });
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+document.getElementById("searchButton").addEventListener("click", function () {
+    let searchValue = document.getElementById("searchName").value.trim();
+    if (searchValue) {
+        window.location.href = `/admin/customers?search=${searchValue}&page=1`;
+    } else {
+        window.location.href = "/admin/customers?page=1";
+    }
+});
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+document.getElementById("searchName").addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+        let searchValue = document.getElementById("searchName").value.trim();
+        if (searchValue) {
+            window.location.href = `/admin/customers?search=${searchValue}&page=1`;
+        } else {
+            window.location.href = "/admin/customers?page=1";
+        }
+    }
+});
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    </script>
+</html>
