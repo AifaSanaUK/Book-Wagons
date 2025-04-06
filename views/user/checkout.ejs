@@ -332,27 +332,8 @@
             <button class="btn" onclick="openAddModal()">+ Add New Address</button>
 
           
-            <!-- <h3 style="margin-top: 20px;">Apply Coupon</h3>
-<div class="coupon-box">
-    <input type="text" id="couponCode" placeholder="Enter coupon code">
-    <h3>Available Coupons</h3>
-<ul id="couponList">
-    <% coupons.forEach(coupon => { %>
-        <li id="<%= coupon.name %>">
-            <b><%= coupon.name %></b> - <%= coupon.offerPrice %> off 
-            (Min Order: <%= coupon.minimumPrice %>) 
-            <button class="coupon-btn" data-coupon="<%= coupon.name %>">Apply</button>
-        </li>
-    <% }) %>
-</ul>
-    
-</div> -->
-
-<!-- Coupon Modal Trigger -->
-<!-- Coupon Modal Trigger -->
 <button onclick="openCouponModal()" class="open-coupon-modal-btn" style="padding: 20px; margin-top: 20px; margin-left: 190px; font-size: 15px; border: none; color: white; background-color: #e0a800;">View Available Coupons</button>
 
-<!-- Coupon Modal -->
 <div id="couponModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeCouponModal()">&times;</span>
