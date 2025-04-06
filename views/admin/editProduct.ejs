@@ -259,10 +259,11 @@
             <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
             <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
             <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
-            <li><a href="/coupons"><i class="fa-solid fa-tag"></i> Coupons</a></li>
+            <li><a href="/admin/coupon"><i class="fa-solid fa-tag"></i> Coupons</a></li>
             <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
             <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
             <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i>Sales Report</a></li>
         </ul>
         <form action="/admin/logout" method="GET">
             <button type="submit" style="margin-top: 20px; padding: 10px 20px; border-radius: 30px; background: #333; color: white; border: none;">Logout</button>
@@ -320,9 +321,9 @@
         <div class="image-container">
             <img src="/<%= product.productImage && product.productImage[0] ? product.productImage[0] : 'default.jpg' %>" 
                  alt="Product Image" class="image-preview" id="preview1">
-            <% if (product.productImage && product.productImage[0]) { %>
+            <!-- <% if (product.productImage && product.productImage[0]) { %>
                 <button type="button" class="delete-btn" onclick="deleteSingleImage('<%= product.productImage[0] %>', '<%= product._id %>', 1)">Delete</button>
-            <% } %>
+            <% } %> -->
         </div>
     </div>
     
@@ -333,9 +334,9 @@
         <div class="image-container">
             <img src="/<%= product.productImage && product.productImage[1] ? product.productImage[1] : 'default.jpg' %>" 
                  alt="Product Image" class="image-preview" id="preview2">
-            <% if (product.productImage && product.productImage[1]) { %>
+            <!-- <% if (product.productImage && product.productImage[1]) { %>
                 <button type="button" class="delete-btn" onclick="deleteSingleImage('<%= product.productImage[1] %>', '<%= product._id %>', 2)">Delete</button>
-            <% } %>
+            <% } %> -->
         </div>
     </div>
     
@@ -346,9 +347,9 @@
         <div class="image-container">
             <img src="/<%= product.productImage && product.productImage[2] ? product.productImage[2] : 'default.jpg' %>" 
                  alt="Product Image" class="image-preview" id="preview3">
-            <% if (product.productImage && product.productImage[2]) { %>
+            <!-- <% if (product.productImage && product.productImage[2]) { %>
                 <button type="button" class="delete-btn" onclick="deleteSingleImage('<%= product.productImage[2] %>', '<%= product._id %>', 3)">Delete</button>
-            <% } %>
+            <% } %> -->
         </div>
     </div>
     
@@ -409,7 +410,6 @@ function validateForm() {
         Swal.fire("Category Required", "Please select a category.", "error");
         return false;
     }
-
     return true;
 }
 
@@ -419,10 +419,18 @@ document.getElementById("productForm").addEventListener("submit", function(event
         event.preventDefault();
     }
 });
-
 function previewImage(event, index) {
     const file = event.target.files[0];
+
     if (file) {
+        const allowedTypes = ["image/jpeg", "image/png"];
+        
+        if (!allowedTypes.includes(file.type)) {
+            Swal.fire("Invalid File", "Only JPG and PNG formats are allowed.", "error");
+            event.target.value = ""; // Clear the file input
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = function(e) {
             showCropperModal(e.target.result, index);
@@ -430,6 +438,7 @@ function previewImage(event, index) {
         reader.readAsDataURL(file);
     }
 }
+
 // ------------------------------------------------------------------------------
 function showCropperModal(imageSrc, index) {
     Swal.fire({

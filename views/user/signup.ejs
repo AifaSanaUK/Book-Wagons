@@ -147,6 +147,11 @@
                 <input type="password" id="confirm-password" name="confirm-password" class="form-control" required>
                 <div id="confirmError" class="error-message"></div>
             </div>
+            <div class="form-group">
+                <label for="referralCode">Referral Code (Optional):</label>
+    <input type="text" name="referralCode" id="referralCode" placeholder="Enter referral code if any" />
+            </div>
+            
 <div>
             <button type="submit" class="btn-signup" >Signup</button>
 </div>
@@ -175,6 +180,8 @@
     const phone = document.getElementById("phone").value.trim();
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirm-password").value;
+    const referralCode = document.getElementById("referralCode") ? document.getElementById("referralCode").value.trim() : "";
+    
     const messagesDiv = document.getElementById("messages");
 
    
@@ -232,16 +239,28 @@
         const response = await fetch("/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, phone, password ,confirmPassword}),
+            body: JSON.stringify({ name, email, phone, password ,confirmPassword,referralCode}),
             credentials: "include"
         });
 
         const result = await response.json();
 
         if (result.success) {
-            window.location.href = "/verifyotp"; 
+
+            Swal.fire({
+                icon: 'success',
+                title: 'OTP Sent!',
+                text: 'OTP has been sent to your email.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = "/verifyotp"; 
+            });
         } else {
-            messagesDiv.innerHTML = `<p style="color: red;">${result.message || "Signup failed, try again!"}</p>`;
+            Swal.fire({
+                icon: 'error',
+                title: 'Signup Failed',
+                text: result.message || "Signup failed, try again!"
+            });
         }
     } catch (error) {
         console.error("Error:", error);

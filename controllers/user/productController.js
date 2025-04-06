@@ -9,37 +9,57 @@ const productDetails = async (req, res) => {
         const userId = req.session.user;
         const userData = await User.findById(userId);
         const productId = req.query.id;
+
         const product = await Product.findById(productId).populate("category");
 
-        if (!product) {
-            return res.redirect("/pageNotFound");
+        if (!product || product.isBlocked) {
+            return res.render('user/productNotFound', { user: userData });
         }
 
         const findCategory = product.category;
-        const categoryOffer = findCategory?.categoryOffer || 0;
+
+
+        const categoryOffer = findCategory?.offerPrice || 0;
         const productOffer = product.productOffer || 0;
-        const totalOffer = categoryOffer + productOffer;
+
+
+        console.log("Category Offer:", categoryOffer);
+        console.log("Product Offer:", productOffer);
+
+
+        const highestOffer = Math.max(categoryOffer, productOffer);
+        console.log("Highest Offer:", highestOffer);
+
+
+        const regularPrice = product.regularPrice;
+        const highestDiscount = Math.floor((regularPrice * highestOffer) / 100);
+        const salePrice = regularPrice - highestDiscount;
 
 
         const relatedProducts = await Product.find({
             category: findCategory._id,
-            _id: { $ne: productId }
+            _id: { $ne: productId },
+            isBlocked: false
         }).limit(4);
 
         res.render('user/productDetails', {
             user: userData,
             userId,
-            product: product,
+            product,
             quantity: product.quantity,
-            totalOffer: totalOffer,
+            highestOffer,
+            salePrice,
             category: findCategory,
-            relatedProducts: relatedProducts
+            relatedProducts
         });
     } catch (error) {
         console.error("Error fetching data:", error);
         res.redirect("/pageNotFound");
     }
 };
+
+
+
 // ----------------------------------------------------------------------------------------------------------------------------------
 
 

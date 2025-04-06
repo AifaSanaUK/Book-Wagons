@@ -6,7 +6,7 @@ const customerInfo = async (req, res) => {
     try {
         let search = req.query.search || "";
         let page = parseInt(req.query.page) || 1;
-        const limit = 3;
+        const limit = 5;
 
         const userData = await User.find({
             isAdmin: false,
@@ -17,7 +17,7 @@ const customerInfo = async (req, res) => {
         })
             .limit(limit)
             .skip((page - 1) * limit)
-            .sort({ createdAt: -1 })
+            .sort({ createdOn: -1 })
             .exec();
         if (userData.length === 0) {
             return res.render("admin/customers", { data: [], totalPages: 0, currentPage: page, search: search, noResults: true });
@@ -60,7 +60,7 @@ const customerBlocked = async (req, res) => {
         res.redirect("/pageerror");
     }
 };
-
+// --------------------------------------------------------------------------------------------------------------------------------------
 const customerunBlocked = async (req, res) => {
     try {
         let id = req.query.id;
@@ -72,6 +72,8 @@ const customerunBlocked = async (req, res) => {
         res.redirect("/pageerror");
     }
 };
+// --------------------------------------------------------------------------------------------------------------------------------------
+
 const logout = (req, res) => {
     req.session.destroy((err) => {
         if (err) {

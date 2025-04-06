@@ -209,10 +209,11 @@
             <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
             <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
             <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
-            <li><a href="/coupons"><i class="fa-solid fa-tag"></i> Coupons</a></li>
+            <li><a href="/admin/coupon"><i class="fa-solid fa-tag"></i> Coupons</a></li>
             <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
             <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
             <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i>Sales Report</a></li>
             <div>
                 <form action="/admin/logout" method="GET">
                     <button type="submit" id="button">Logout</button>
@@ -246,6 +247,7 @@
                     <th>Date</th>
                     <th>User</th>
                     <th>Status</th>
+                    <th>Payment Method</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -254,10 +256,26 @@
                     <tr>
                         <td><%= order.orderId %></td>
                         <td><%= new Date(order.createdOn).toLocaleDateString("en-GB") %></td>
-                        <td><%= order.user.name %> (<%= order.user.email %>)</td>
+                        <td>
+                            <% if (order.user) { %>
+                                <%= order.user.name %> (<%= order.user.email %>)
+                            <% } else { %>
+                                <span class="text-danger">User Deleted</span>
+                            <% } %>
+                        </td>
                         
-                       
-                        <td id="status-<%= order._id %>"><%= order.status %></td> 
+                        
+                        <td id="status-<%= order._id %>">
+                            <% if (order.status === "Cancelled") { %>
+                                <span class="cancelled-status" onclick="showCancelReason('<%= order._id %>')" style="color: red; cursor: pointer;">
+                                    Cancelled
+                                </span>
+                            <% } else { %>
+                                <%= order.status %>
+                            <% } %>
+                        </td>
+                        
+                        <td><%= order.paymentMethod %></td>
                         
                   
                         <td id="action-<%= order._id %>">
@@ -341,6 +359,29 @@
     });
 }
 
+
+function showCancelReason(orderId) {
+    console.log("Order ID Sent:", orderId); 
+
+    fetch(`/admin/order/cancel-reason/${orderId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    title: "Cancellation Reason",
+                    text: data.reason,
+                    icon: "info",
+                    confirmButtonText: "OK"
+                });
+            } else {
+                Swal.fire("Error", data.message || "Could not fetch the cancellation reason.", "error");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching cancellation reason:", error);
+            Swal.fire("Error", "Something went wrong!", "error");
+        });
+}
 
 
     </script>

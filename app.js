@@ -9,6 +9,9 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const adminRouter = require("./routes/adminRouter")
 const passwordRouter = require("./routes/passwordRouter");
 const orderRouter = require('./routes/orderRouter')
+const paymentRouter = require('./routes/payementRouter')
+const { checkBlockedUser } = require('./middlewares/auth')
+const Product = require('./models/productSchema')
 
 
 
@@ -40,6 +43,10 @@ app.use(session({
     }
 }));
 app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
+app.use((req, res, next) => {
     if (req.path.startsWith("/signup") || req.path.startsWith("/verify-otp")) {
         console.log(" Checking session...");
         console.log("Session OTP:", req.session.otp);
@@ -48,11 +55,6 @@ app.use((req, res, next) => {
     next();
 });
 app.use(flash());
-// app.use((req, res, next) => {
-//     console.log('Session:', req.session);
-//     console.log('Session ID:', req.sessionID);
-//     next();
-// });
 
 app.use(passport.initialize());
 app.use(passport.session())
@@ -67,13 +69,32 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
 
-
+app.use(checkBlockedUser);
 const userRoutes = require("./routes/userRouter");
 app.use("/", userRoutes);
 app.use('/admin', adminRouter)
 app.use("/", passwordRouter);
 app.use('/', orderRouter)
+app.use('/payment', paymentRouter)
 
+app.get('*', async (req, res) => {
+    try {
+        if (req.session.admin) {
+            return res.render('admin/dashboard', { username: req.session.admin });
+        } else if (req.session.user) {
+            const products = await Product.find().lean();
+            return res.render('user/home', {
+                username: req.session.user,
+                products
+            });
+        } else {
+            return res.redirect('/pageNotfound');
+        }
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).send("Server Error");
+    }
+});
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

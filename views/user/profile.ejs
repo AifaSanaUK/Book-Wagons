@@ -201,7 +201,7 @@
         <a href="/addressButton" id="addressLink">Address</a>
         <a href="/order">Order</a>
         <a href="/wallet">Wallet</a>
-        <a href="/referrals">Referrals</a>
+        
         <a href="/logoutt">Logout</a>
     </div>
 
@@ -223,8 +223,17 @@
                 <label>Phone:</label>
                 <p id="phone"><%= user.phone %></p>
             </div>
+          
 
-            <a href="/change-password" class="btn btn-light">Change Password</a>
+            <a href="/update-password" class="btn btn-light">Change Password</a>
+            <p></p>
+            <p></p>
+            <div>
+                <p>your Referral Code:<strong><%= user.referralCode %></strong></p>
+             
+                <p>Share this code with friends to earn rewards!</p>
+            </div>
+            
 
             <div class="edit-profile-container">
                 <button class="btn btn-primary" id="editProfileBtn">Edit Profile</button>

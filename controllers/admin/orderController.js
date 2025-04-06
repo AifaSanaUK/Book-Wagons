@@ -4,8 +4,14 @@ const User = require("../../models/userSchema");
 const Cart = require("../../models/cartSchema");
 const Address = require("../../models/addressSchema")
 const Order = require('../../models/orderSchema')
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
+const { generatePDF, generateExcel } = require('../../services/reportServices')
+
 
 // --------------------------------------------------------------------------------------------------------------------
+
 const getOrders = async (req, res) => {
     try {
         const { page = 1, limit = 6, sort = 'createdOn', order = 'desc', search = '', status = '' } = req.query;
@@ -44,7 +50,26 @@ const getOrders = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+// -------------------------------------------------------------------------------------------------------
 
+const getCancelReason = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        console.log("Order ID Received:", orderId);
+
+        const order = await Order.findById(orderId).lean();
+        console.log("Order Found:", order);
+
+        if (order && order.cancellationReason) {
+            res.json({ success: true, reason: order.cancellationReason });
+        } else {
+            res.json({ success: false, message: "No cancellation reason found." });
+        }
+    } catch (error) {
+        console.error("Error fetching cancellation reason:", error);
+        res.status(500).json({ success: false, message: "Server error." });
+    }
+};
 
 
 // -----------------------------------------------------------------------------------------------------------------------
@@ -70,8 +95,24 @@ const viewDetails = async (req, res) => {
                 select: "productName regularPrice salePrice productImage"
             })
             .populate("user", "name email")
-            .populate("address")
             .exec();
+        const addressDoc = await Address.findOne({
+            "address._id": order.address
+        }, { "address.$": 1 });
+
+        let selectedAddress = order.address;
+
+        if (addressDoc && addressDoc.address.length > 0) {
+            selectedAddress = addressDoc.address[0];
+        }
+
+        const { discountAmount, deliveryCharge, couponCode } = order;
+
+        console.log("Resolved Address:", selectedAddress);
+        console.log("Fetched Order:", order);
+        console.log("Discount Amount:", discountAmount);
+        console.log("Delivery Charge:", deliveryCharge);
+        console.log("Coupon Code:", couponCode);
 
         if (!order) {
             return res.status(404).send("Order not found");
@@ -79,7 +120,11 @@ const viewDetails = async (req, res) => {
 
         console.log("Fetched Order:", order);
 
-        res.render("admin/ordersDetails", { order });
+        res.render("admin/ordersDetails", {
+            order, selectedAddress, discountAmount,
+            deliveryCharge,
+            couponCode
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -259,22 +304,218 @@ const updateStock = async (req, res) => {
             return res.redirect("/admin/stock-management");
         }
 
-        const product = await Product.findById(productId);
-        if (!product) {
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            productId,
+            {
+                quantity: quantity,
+                status: quantity == 0 ? "Out of Stock" : "Available"
+            },
+            { new: true }
+        );
+
+        if (!updatedProduct) {
             req.flash("error", "Product not found.");
             return res.redirect("/admin/stock-management");
         }
 
-        product.quantity = quantity;
-        product.status = quantity == 0 ? "Out of Stock" : "Available";
-        await product.save();
-
+        console.log(" Stock updated:", updatedProduct);
         req.flash("success", "Stock updated successfully.");
         res.redirect("/admin/stock-management");
     } catch (error) {
-        console.error("Error updating stock:", error);
+        console.error(" Error updating stock:", error);
         req.flash("error", "Error updating stock.");
         res.redirect("/admin/stock-management");
+    }
+};
+
+// ----------------------------------------------------------------------------------------------------
+
+const getSalesReport = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+        const filter = {};
+
+        const now = new Date();
+
+        if (req.query.filter) {
+            const filterType = req.query.filter.toLowerCase();
+
+            if (filterType === "daily") {
+                filter.createdOn = {
+                    $gte: new Date(now.setHours(0, 0, 0, 0)),
+                    $lte: new Date(now.setHours(23, 59, 59, 999))
+                };
+            } else if (filterType === "weekly") {
+                const startOfWeek = new Date();
+                startOfWeek.setDate(now.getDate() - now.getDay());
+                startOfWeek.setHours(0, 0, 0, 0);
+
+                filter.createdOn = {
+                    $gte: startOfWeek,
+                    $lte: now
+                };
+            } else if (filterType === "yearly") {
+                const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+                filter.createdOn = {
+                    $gte: startOfYear,
+                    $lte: now
+                };
+            }
+        }
+
+
+        if (req.query.startDate && req.query.endDate) {
+            const startDate = new Date(req.query.startDate);
+            const endDate = new Date(req.query.endDate);
+
+
+            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                return res.status(400).send("Invalid date format");
+            }
+
+
+            endDate.setHours(23, 59, 59, 999);
+
+            if (startDate > endDate) {
+                return res.status(400).send("Start date must be before end date");
+            }
+
+            filter.createdOn = {
+                $gte: startDate,
+                $lte: endDate
+            };
+        }
+
+
+        const orders = await Order.find(filter)
+            .populate('user')
+            .sort({ createdOn: -1 })
+            .skip(skip)
+            .limit(limit);
+
+
+        const totalOrdersCount = await Order.countDocuments(filter);
+        const totalSales = (await Order.find(filter))
+            .reduce((sum, order) => sum + order.finalAmount, 0);
+
+        const returnApprovedOrders = await Order.countDocuments({
+            ...filter,
+            status: "Return Approved"
+        });
+
+        const totalDiscount = await Order.aggregate([
+            { $match: filter },
+            { $group: { _id: null, total: { $sum: "$discountAmount" } } }
+        ]);
+
+        const cancelledOrders = await Order.countDocuments({
+            ...filter,
+            status: 'Cancelled'
+        });
+
+
+        res.render("admin/salesReport", {
+            orders,
+            totalOrders: totalOrdersCount,
+            totalSales,
+            returnApprovedOrders,
+            totalDiscount: totalDiscount[0]?.total || 0,
+            cancelledOrders,
+            currentPage: page,
+            totalPages: Math.ceil(totalOrdersCount / limit),
+            filter: req.query.filter || "",
+            startDate: req.query.startDate || "",
+            endDate: req.query.endDate || ""
+        });
+    } catch (error) {
+        console.error("Error fetching sales report:", error);
+        res.status(500).send("Server Error");
+    }
+};
+
+
+// ----------------------------------------------------------------------------------------------------
+
+
+
+const downloadPDF = async (req, res) => {
+    try {
+        const filter = {};
+        if (req.query.filter) {
+            filter.status = req.query.filter;
+        }
+        if (req.query.startDate && req.query.endDate) {
+            filter.createdOn = {
+                $gte: new Date(req.query.startDate),
+                $lte: new Date(req.query.endDate)
+            };
+        }
+
+        const orders = await Order.find(filter).sort({ createdOn: -1 });
+
+
+        const filePath = await generatePDF(orders, filter);
+
+        const absolutePath = path.resolve(filePath);
+        console.log("Absolute PDF Path:", absolutePath);
+
+
+        if (fs.existsSync(absolutePath)) {
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=sales_report.pdf`);
+
+
+            const readStream = fs.createReadStream(absolutePath);
+
+            readStream.on('open', () => {
+                readStream.pipe(res);
+            });
+
+            readStream.on('error', (err) => {
+                console.error("Error reading file:", err);
+                res.status(500).send("Error downloading the PDF");
+            });
+        } else {
+            console.error("File does not exist");
+            res.status(404).send("PDF file not found");
+        }
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+        res.status(500).send("Server Error");
+    }
+};
+// ----------------------------------------------------------------------------------------------------
+
+
+const downloadExcel = async (req, res) => {
+    try {
+        const filter = {};
+        if (req.query.filter) {
+            filter.status = req.query.filter;
+        }
+        if (req.query.startDate && req.query.endDate) {
+            filter.createdOn = {
+                $gte: new Date(req.query.startDate),
+                $lte: new Date(req.query.endDate)
+            };
+        }
+
+        const orders = await Order.find(filter).sort({ createdOn: -1 });
+        const filePath = await generateExcel(orders, filter);
+
+        res.download(filePath, (err) => {
+            if (err) {
+                console.error("Error downloading Excel:", err);
+                res.status(500).send("Could not download the Excel file");
+            }
+        });
+    } catch (error) {
+        console.error("Error generating Excel:", error);
+        res.status(500).send("Server Error");
     }
 };
 
@@ -285,11 +526,15 @@ const updateStock = async (req, res) => {
 
 module.exports = {
     getOrders,
+    getCancelReason,
     updateOrderStatus,
     verifyReturnRequest,
     searchOrders,
     viewDetails,
     approveReturnRequest,
     updateStock,
-    viewStock
+    viewStock,
+    getSalesReport,
+    downloadExcel,
+    downloadPDF
 }

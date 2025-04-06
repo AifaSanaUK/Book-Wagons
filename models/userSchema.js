@@ -50,7 +50,8 @@ const userSchema = new Schema({
         date: { type: Date, default: Date.now },
         amount: Number,
         type: { type: String, enum: ["credit", "debit"] },
-        description: String
+        description: String,
+        orderId: { type: mongoose.Schema.Types.ObjectId, ref: "Order", default: null }
     }],
     wishlist: [{
         type: Schema.Types.ObjectId,
@@ -64,18 +65,7 @@ const userSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    // },
-    // referralCode: {  //
-    //     type: String
-    // },
-    // redeemed: {
-    //     type: Boolean,
-    //     default: false
-    // },
-    // redeemedUsers: [{
-    //     type: Schema.Types.ObjectId,
-    //     ref: "User"
-    // }],
+
     searchHistory: [{
         category: {
             type: Schema.Types.ObjectId,
@@ -88,7 +78,12 @@ const userSchema = new Schema({
             type: Date,
             default: Date.now
         }
-    }]
+    }],
+    referralCode: { type: String, unique: true }, // User's unique referral code
+    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    referralExpiry: { type: Date, default: null }, // Who referred them
+    referralReward: { type: Number, default: 0 },
+
 });
 
 

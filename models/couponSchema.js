@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const coupenSchema = new mongoose.Schema({
+const couponSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
         unique: true
     },
+
     createdOn: {
         type: Date,
         default: Date.now,
@@ -18,19 +19,21 @@ const coupenSchema = new mongoose.Schema({
     offerPrice: {
         type: Number,
         required: true
-
     },
     isList: {
         type: Boolean,
         default: true
-
     },
+    minimumPrice: {
+        type: Number,
+        required: true
+    }, isReferral: { type: Boolean, default: false }, // Identify referral-based coupons
+    referredUser: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
     userId: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user"
-
+        ref: "User"
     }]
+});
 
-})
-const coupen = mongoose.model("coupen", coupenSchema);
-module.exports = coupen;
+const Coupon = mongoose.model("Coupon", couponSchema);
+module.exports = Coupon;

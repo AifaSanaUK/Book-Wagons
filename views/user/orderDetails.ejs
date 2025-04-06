@@ -124,18 +124,15 @@
             <hr>
             <div class="summary">
                 <p><strong>Subtotal:</strong> ₹<%= order.totalPrice %></p>
-                <p><strong>Discount:</strong> ₹<%= order.discount %></p>
+                
+                <p><strong>Delivery Charge:</strong> ₹50</p>
+             
                 <p><strong>Final Amount:</strong> ₹<%= order.finalAmount %></p>
             </div>
         <% } else { %>
             <p>No products found in this order.</p>
         <% } %>
 
-        <% if (order.status !== 'Cancelled') { %>
-            <button class="btn cancel-btn" id="cancelOrderBtn">Cancel Order</button>
-        <% } else { %>
-            <button class="btn cancelled" disabled>Cancelled</button>
-        <% } %>
         
         <button class="btn" onclick="window.location.href='/shop'">Continue Shopping</button>
     </div>
@@ -143,51 +140,70 @@
     <script>
 
         // -------------------------------------------------------------------------------------------------------
+        
         document.getElementById("cancelOrderBtn")?.addEventListener("click", function () {
-            Swal.fire({
-                title: "Are you sure?",
-                text: "Do you really want to cancel this order?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, cancel it!",
-                cancelButtonText: "No, keep it"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch(`/cancel-order/<%= order._id %>`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message === "Order canceled successfully") {
-                            Swal.fire({
-                                title: "Order Cancelled!",
-                                text: "Your order has been cancelled successfully.",
-                                icon: "success" 
-                            }).then(() => {
-                          
-                                document.getElementById("orderStatus").innerText = "Cancelled";
+    Swal.fire({
+        title: "Are you sure?",
+        text: "Do you really want to cancel this order?",
+        icon: "warning",
+        input: "textarea",
+        inputPlaceholder: "Enter your reason for cancellation...",
+        inputValidator: (value) => {
+            if (!value || value.trim() === "") {
+                return "Cancellation reason is required";
+            }
+        },
+        showCancelButton: true,
+        confirmButtonText: "Yes, cancel it!",
+        cancelButtonText: "No, keep it"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/cancel-order/<%= order._id %>`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ reason: result.value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Backend response:", data);
+                if (data.message && data.message.toLowerCase().includes("success")) {
+                    document.querySelector(".tracking-steps").innerHTML = `
+                        <div class="tracking-step cancelled">
+                            <i class="fas fa-times-circle"></i>
+                            <p>Order Cancelled</p>
+                            <p><strong>Reason:</strong> ${result.value}</p>
+                        </div>
+                    `;
 
-                     
-                                let cancelBtn = document.getElementById("cancelOrderBtn");
-                                if (cancelBtn) {
-                                    cancelBtn.innerText = "Cancelled";
-                                    cancelBtn.classList.remove("cancel-btn");
-                                    cancelBtn.classList.add("cancelled");
-                                    cancelBtn.disabled = true;
-                                }
-                            });
-                        } else {
-                            Swal.fire("Error", data.message, "error");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        Swal.fire("Error!", "Something went wrong!", "error");
+                    let cancelBtn = document.getElementById("cancelOrderBtn");
+                    if (cancelBtn) {
+                        cancelBtn.innerText = "Cancelled";
+                        cancelBtn.disabled = true;
+                        cancelBtn.style.backgroundColor = "gray";
+                        cancelBtn.style.cursor = "not-allowed";
+                    }
+
+                    Swal.fire({
+                        title: "Order Cancelled!",
+                        text: "Your order has been cancelled successfully.",
+                        icon: "success",
+                        timer: 2000, 
+                        showConfirmButton: false
                     });
+                } else {
+                    console.warn("Unexpected Response:", data);
+                    Swal.fire("Error", data.message || "Unexpected error occurred.", "error");
                 }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                Swal.fire("Error!", "Something went wrong!", "error");
             });
-        });
+        }
+    });
+});
+
+
     </script>
 </body>
 </html>

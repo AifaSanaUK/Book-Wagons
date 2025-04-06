@@ -6,7 +6,7 @@
     <title>My Wallet</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* General Styles */
+  
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f5f7fa;
@@ -16,17 +16,40 @@
             display: flex;
             min-height: 100vh;
         }
+        .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
 
-        /* Sidebar Styles */
+.pagination a {
+    padding: 10px 15px;
+    margin: 0 5px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.pagination span {
+    margin: 0 10px;
+    font-weight: 500;
+}
+
+.pagination a:hover {
+    background-color: #45a049;
+}
+  
         .sidebar {
-            width: 15%; /* Sidebar takes 15% of the width */
+            width: 15%; 
             background: #ffeef6;
             color: rgb(77, 77, 77);
             padding: 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            position: fixed; /* Fixed position */
-            height: 100vh; /* Full height */
-            overflow-y: auto; /* Scrollable if content overflows */
+            position: fixed; 
+            height: 100vh;
+            overflow-y: auto; 
         }
 
         .sidebar h4 {
@@ -51,22 +74,21 @@
             background-color: #f0f0f0;
         }
 
-        /* Main Content Styles */
       
         .main-content {
-                                flex: 1; /* Take remaining space */
-                                margin-left: 15%; /* Offset for sidebar */
+                                flex: 1; 
+                                margin-left: 15%; 
                                 padding: 20px;
                                 margin-top: 10px;
-                                overflow-y: auto; /* Scrollable if content overflows */
+                                overflow-y: auto; 
                                 display: flex;
-                                justify-content: center; /* Center content horizontally */
-                                align-items: center; /* Center content vertically */
-                                flex-direction: column; /* Stack content vertically */
+                                justify-content: center; 
+                                align-items: center;
+                                flex-direction: column; 
                             }
                     
                             .container {
-                                max-width: 800px; /* Limit container width */
+                                max-width: 800px; 
                                 width: 100%;
                                 padding: 20px;
                                 background-color: #fff;
@@ -95,30 +117,30 @@
                     
                             .wallet-balance strong {
                                 font-size: 2rem;
-                                color: #4CAF50; /* Green color for balance */
+                                color: #4CAF50;
                             }
                     
-                            /* Table Container Styles */
+                      
                             .table-container {
-                                width: 100%; /* Full width */
-                                overflow-x: auto; /* Add horizontal scroll if table overflows */
+                                width: 100%; 
+                                overflow-x: auto; 
                             }
                     
-                            /* Table Styles */
+                           
                             .table {
-                                width: 100%; /* Full width */
-                                border-collapse: collapse; /* Remove spacing between cells */
-                                background-color: #fff; /* White background */
-                                border-radius: 8px; /* Rounded corners */
-                                overflow: hidden; /* Hide overflow for rounded corners */
-                                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow */
+                                width: 100%; 
+                                border-collapse: collapse;
+                                background-color: #fff; 
+                                border-radius: 8px;
+                                overflow: hidden;
+                                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
                             }
                     
                             .table th,
                             .table td {
-                                padding: 12px 15px; /* Add padding to cells */
-                                text-align: left; /* Align text to the left */
-                                border-bottom: 1px solid #ddd; /* Add border between rows */
+                                padding: 12px 15px;
+                                text-align: left; 
+                                border-bottom: 1px solid #ddd; 
                             }
                     
                             .table th {
@@ -167,7 +189,7 @@
         <a href="/addressButton" id="addressLink">Address</a>
         <a href="/order">Order</a>
         <a href="/wallet">Wallet</a>
-        <a href="/referrals">Referrals</a>
+        
         <a href="/logoutt">Logout</a>
     </div>
 
@@ -178,7 +200,7 @@
          
             <div class="wallet-balance">
                 <p>Your Wallet Balance:</p>
-                <strong>$<%= walletBalance %></strong>
+                <strong>₹<%= walletBalance %></strong>
             </div>
 
        
@@ -203,7 +225,7 @@
                                 <tr>
                                     <td><%= new Date(transaction.date).toLocaleDateString() %></td>
                                     <td><%= transaction.description %></td>
-                                    <td>$<%= transaction.amount.toFixed(2) %></td>
+                                    <td>₹<%= transaction.amount.toFixed(2) %></td>
                                     <td style=`color:<%= transaction.type === 'credit' ? 'green' : 'red' %>;`>
                                         <%= transaction.type %>
                                     </td>
@@ -214,6 +236,21 @@
                 </table>
             </div>
         </div>
+
+
+<div class="pagination">
+    <% if (currentPage > 1) { %>
+        <a href="/wallet?page=<%= currentPage - 1 %>">&laquo; Previous</a>
+    <% } %>
+
+    <span>Page <%= currentPage %> of <%= totalPages %></span>
+
+    <% if (currentPage < totalPages) { %>
+        <a href="/wallet?page=<%= currentPage + 1 %>">Next &raquo;</a>
+    <% } %>
+</div>
+
+
     </div>
 </body>
 </html>

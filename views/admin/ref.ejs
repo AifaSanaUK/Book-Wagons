@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Referral Offers</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #111;
+            display: flex;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar {
+            width: 250px;
+            background: #828282;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            text-align: center;
+        }
+        .profile-section {
+            padding: 20px;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+        .sidebar ul li:hover {
+            background: #150107;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar ul li a i {
+            margin-right: 15px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+            color: white;
+        }
+        
+        .header {
+            background: #ffffff;
+            padding: 30px;
+            text-align: center;
+            width: calc(100% - 250px);
+            position: fixed;
+            top: 0;
+            left: 250px;
+            z-index: 1000;
+        }
+        .header h1 {
+            color: #000000;
+            margin: 0;
+        }
+        #button {
+            border-radius: 30px;
+            background-color: rgb(141, 141, 141);
+            margin-top: 30px;
+            padding: 10px 20px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #button:hover {
+            background-color: black;
+            color: #ffffff;
+        }
+        
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 100px;
+            background-color: #333;
+            color: white;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #555;
+        }
+        th {
+            background-color: #150107;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #444;
+        }
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile-section">
+            <img src="/images/WhatsApp Image 2025-03-04 at 21.15.51_2d23995d.jpg" alt="Profile Picture" class="profile-pic">
+            <h3>Aifa Sana</h3>
+        </div>
+        <ul>
+            <li><a href="/admin/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+            <li><a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a></li>
+            <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
+            <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
+            <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="/admin/coupon"><i class="fa-solid fa-tag"></i> Coupons</a></li>
+            <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
+            <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
+            <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i>Sales Report</a></li>
+            <li><a href="/admin/wallet-transactions"><i class="fa-solid fa-box"></i> Wallet Management</a></li>
+            
+            <div>
+                <form action="/admin/logout" method="GET">
+                    <button type="submit" id="button">Logout</button>
+                </form>
+            </div>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="header">
+            <h1>Referral Offers</h1>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>User Name</th>
+                    <th>Referral Code</th>
+                    <th>Referred By</th>
+                    <th>Expiry Date</th>
+                    <th>Reward Amount</th> <!-- Added column for amount -->
+                    <th>Actions</th> <!-- Added column for edit/delete -->
+                </tr>
+                </thead>
+                <tbody>
+                    <% if (offers && offers.length > 0) { %>
+                        <% offers.forEach(offer => { %>
+                            <tr>
+                                <td><%= offer.name %></td>
+                                <td><%= offer.referralCode %></td>
+                                <td><%= offer.referredBy ? offer.referredBy.name : "No referrer" %></td>
+                                <td><%= offer.referralExpiry ? offer.referralExpiry.toDateString() : "No Expiry" %></td>
+                              
+<td><%= offer.referralReward !== undefined ? `₹${offer.referralReward}` : "N/A" %></td>
+
+                                <td>
+                                    <a href="/admin/edit-referral/<%= offer._id %>">Edit</a> | 
+                                    <a href="/admin/delete-referral/<%= offer._id %>" onclick="return confirm('Are you sure?');">Delete</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6" class="no-data">No referral offers found.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+        </table>
+    </div>
+</body>
+</html>

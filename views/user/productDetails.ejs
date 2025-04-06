@@ -6,7 +6,8 @@
     <title><%= product.productName %> - Product Details</title>
     <link rel="stylesheet" href="/styles.css"> 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         /* General Styles */
         body {
@@ -302,21 +303,36 @@
             <p class="price">Price: ₹<%= product.salePrice.toLocaleString('en-IN') %></p>
             <p class="price">Regular Price: <s>₹<%= product.regularPrice.toLocaleString('en-IN') %></s></p>
             <p class="offers">
-                <% if(!totalOffer) { %>
+                <% if(!highestOffer) { %>
                     No offers
                 <% } else { %>
-                    <%= totalOffer %>% Offer!
+                    <%= highestOffer %>% Offer!
                 <% } %>
             </p>
+            
             <p><%= product.description %></p>
             <ul class="features">
                
-                <li>💰 Cash on Delivery available</li>
+                <li> Cash on Delivery available</li>
+                <li> UPI Available</li>
             </ul>
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" value="1" min="1" max="<%= product.quantity %>">
+            <!-- <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" value="1" min="1" max="<%= product.quantity %>"> -->
+
             <button class="btn add-to-cart" onclick="addToCart('<%= product._id %>', '<%= product.salePrice %>','<%=product.productImage[0]%>','<%= product.category.name %>')">🛒 Add to Cart</button>
-            <p class="availability"><strong>Availability:</strong> <%= product.quantity %> in stock</p>
+            <button class="btn add-to-cart" onclick="addToWishlist('<%= product._id %>')">
+                ❤️ Add to wishlist
+            </button>
+            
+            <p class="availability">
+                <strong>Availability:</strong> 
+                <% if (product.quantity < 3) { %>
+                    <span style="color: red;">Limited stock</span>
+                <% } else { %>
+                    <%= product.quantity %> in stock
+                <% } %>
+            </p>
+            
         </div>
     </div>
 
@@ -342,6 +358,43 @@
     <script>
          // -------------------------------------------------------------------------------------------------------
 
+         async function addToWishlist(productId) {
+    try {
+        const response = await fetch('/wishlist/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            Swal.fire({
+                title: "Added to Wishlist!",
+                text: "Product moved successfully.",
+                icon: "success",
+                timer: 2000
+            });
+
+          
+        } else {
+            Swal.fire({
+                title: "Already in the list",
+                text: data.message || "Failed to move product to wishlist.",
+                icon: "info"
+            });
+        }
+    } catch (error) {
+        console.error('Error moving to wishlist:', error);
+        Swal.fire({
+            title: "Oops!",
+            text: "Something went wrong.",
+            icon: "error"
+        });
+    }
+}
+
+
         function toggleZoom() {
             const mainImageContainer = document.getElementById("mainImageContainer");
             mainImageContainer.classList.toggle("zoom");
@@ -352,29 +405,45 @@
         }
        
 
-        async function addToCart(productId, price, image,category) { 
-        const userId = "<%= userId %>";
-        const quantity = 1; 
+       async function addToCart(productId, price, image, category) {
+    const userId = "<%= userId %>";
+    const quantity = 1;
 
-        try {
-            const response = await fetch('/add-to-cart', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, productId, quantity, price,image,category }) 
+    try {
+        const response = await fetch('/add-to-cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, productId, quantity, price, image, category }) 
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Added to Cart!',
+                text: 'Your item has been added successfully.',
+                showConfirmButton: false,
+                timer: 1500 
             });
-            const data = await response.json();
-            if (response.ok) {
-                alert('Item added to cart!');
-          
-            } else {
-                console.error('Backend Error:', data); 
-                alert(data.message || 'Failed to add item to cart');
-            }
-        } catch (error) {
-            console.error('Error adding to cart:', error);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: data.message || 'Failed to add item to cart',
+            });
         }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Something went wrong. Please try again later.',
+        });
     }
-    
+}
+
+
     </script>
 </body>
 </html>

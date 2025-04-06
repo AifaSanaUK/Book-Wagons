@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/user/orderController');
 const walletController = require('../controllers/user/walletController')
+const coupenController = require("../controllers/user/couponController")
 const { userAuth, adminAuth } = require("../middlewares/auth");
 
 
@@ -40,6 +41,10 @@ router.get('/generate-invoice/:orderId', userAuth, orderController.generateInvoi
 
 router.get('/wallet', userAuth, walletController.wallet)
 router.get("/wallet/:userId", userAuth, walletController.getData);
+
+
+router.post('/apply-coupon', userAuth, coupenController.applyCoupon)
+router.post('/remove-coupon', userAuth, coupenController.removeCoupon)
 
 module.exports = router;
 

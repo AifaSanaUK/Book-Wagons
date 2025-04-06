@@ -248,7 +248,35 @@
           
         
           text-decoration: underline #e0a800  ;
-        }
+        }   
+
+        .apply-btn {
+        background-color: #4c4e4c;
+        color: white;
+        padding: 8px;
+        font-size: 13px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+    .apply-btn:hover {
+        background-color: #45a049;
+    }
+
+    .remove-btn {
+        background-color: red;
+        color: white;
+        padding: 8px 16px;
+        font-size: 13px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+   
     </style>
 </head>
 <body>
@@ -272,9 +300,13 @@
             </div>
             <p>Total Items: <span id="checkoutTotalItems">0 Items</span></p>
             <p>Grand Total: <span id="checkoutTotalAmount">₹0</span></p>
+          
+<input type="hidden" id="totalAmount" value="<%= totalAmount %>">
+
             <p>Coupon Applied: <span id="couponApplied">None</span></p>
+            
             <p>Discount: ₹<span id="discountAmount">0.00</span></p>
-            <p><b>Final Payable Amount: ₹<span id="finalPayableAmount">0</span></b></p>
+            <p><b>Final Payable Amount: <span id="finalPayableAmount">0</span></b></p>
         </div>
 
       
@@ -300,11 +332,44 @@
             <button class="btn" onclick="openAddModal()">+ Add New Address</button>
 
           
-            <h3 style="margin-top: 20px;">Apply Coupon</h3>
-            <div class="coupon-box">
-                <input type="text" id="couponCode" placeholder="Enter coupon code">
-                <button class="btn" onclick="applyCoupon()">Apply</button>
-            </div>
+            <!-- <h3 style="margin-top: 20px;">Apply Coupon</h3>
+<div class="coupon-box">
+    <input type="text" id="couponCode" placeholder="Enter coupon code">
+    <h3>Available Coupons</h3>
+<ul id="couponList">
+    <% coupons.forEach(coupon => { %>
+        <li id="<%= coupon.name %>">
+            <b><%= coupon.name %></b> - <%= coupon.offerPrice %> off 
+            (Min Order: <%= coupon.minimumPrice %>) 
+            <button class="coupon-btn" data-coupon="<%= coupon.name %>">Apply</button>
+        </li>
+    <% }) %>
+</ul>
+    
+</div> -->
+
+<!-- Coupon Modal Trigger -->
+<!-- Coupon Modal Trigger -->
+<button onclick="openCouponModal()" class="open-coupon-modal-btn" style="padding: 20px; margin-top: 20px; margin-left: 190px; font-size: 15px; border: none; color: white; background-color: #e0a800;">View Available Coupons</button>
+
+<!-- Coupon Modal -->
+<div id="couponModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCouponModal()">&times;</span>
+        <h3>Available Coupons</h3>
+        <input type="text" id="couponSearch" placeholder="Search coupons...">
+        <ul id="couponList">
+            <% coupons.forEach(coupon => { %>
+                <li id="<%= coupon.name %>">
+                    <b><%= coupon.name %></b> - <%= coupon.offerPrice %> off 
+                    (Min Order: <%= coupon.minimumPrice %>) 
+                    <button class="apply-btn" data-coupon="<%= coupon.name %>">Apply</button>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+</div>
+
         </div>
     </div>
 
@@ -356,6 +421,134 @@
 // ----------------------------------------------------------------------------------------------------------------------------------
 
 
+
+
+function openCouponModal() {
+    document.getElementById("couponModal").style.display = "flex";
+}
+
+function closeCouponModal() {
+    document.getElementById("couponModal").style.display = "none";
+}
+
+let originalTotal = document.getElementById("totalAmount").value;
+let finalTotal = originalTotal;
+let discount = 0;
+let appliedCoupon = null;
+
+function toggleCoupon(couponName, button) {
+    if (appliedCoupon && appliedCoupon !== couponName) {
+        Swal.fire({
+            icon: "warning",
+            title: "Multiple Coupons Not Allowed",
+            text: "Only one coupon can be applied per product.",
+            timer: 2000,
+            showConfirmButton: false
+        });
+        return;
+    }
+    if (appliedCoupon === couponName) {
+        removeCoupon(button);
+    } else {
+        applyCoupon(couponName, button);
+    }
+}
+// --------------------------------------------------------------------------------------------------------------------
+function applyCoupon(couponName, button) {
+    const totalAmount = document.getElementById("checkoutTotalAmount").innerText.replace("₹", "");
+
+    fetch("/apply-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ coupon: couponName, totalAmount }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            discount = data.discount;
+            finalTotal = data.finalAmount;
+            appliedCoupon = couponName;
+
+            Swal.fire({
+                icon: "success",
+                title: "Coupon Applied!",
+                text: `Discount: ₹${data.discount}`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            document.getElementById("couponApplied").innerText = couponName;
+            document.getElementById("discountAmount").innerText = data.discount;
+            document.getElementById("finalPayableAmount").innerText = `₹${finalTotal}`;
+
+            button.textContent = "Remove";
+            button.className = "remove-btn";
+            closeCouponModal();
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Oops!",
+                text: data.message,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    })
+    .catch(err => console.error("Error applying coupon:", err));
+}
+// --------------------------------------------------------------------------------------------------------------------
+
+function removeCoupon(button) {
+    appliedCoupon = null;
+    discount = 0;
+    finalTotal = originalTotal;
+
+    document.getElementById("couponApplied").innerText = "None";
+    document.getElementById("discountAmount").innerText = "0.00";
+    document.getElementById("finalPayableAmount").innerText = `₹${finalTotal}`;
+
+    button.textContent = "Apply";
+    button.className = "apply-btn";
+
+    Swal.fire({
+        icon: "success",
+        title: "Coupon Removed!",
+        text: "Coupon has been removed successfully.",
+        timer: 2000,
+        showConfirmButton: false,
+    });
+
+    setTimeout(() => {
+        location.reload();
+    }, 2000);
+}
+// --------------------------------------------------------------------------------------------------------------------
+
+document.getElementById("couponSearch").addEventListener("input", function() {
+    const searchTerm = this.value.toLowerCase();
+    const coupons = document.querySelectorAll("#couponList li");
+
+    coupons.forEach(coupon => {
+        if (coupon.textContent.toLowerCase().includes(searchTerm)) {
+            coupon.classList.add("search-highlight");
+            coupon.style.display = "block";
+        } else {
+            coupon.classList.remove("search-highlight");
+            coupon.style.display = "none";
+        }
+    });
+});
+
+document.querySelectorAll(".apply-btn, .remove-btn").forEach(button => {
+    button.addEventListener("click", () => {
+        const couponName = button.getAttribute("data-coupon");
+        toggleCoupon(couponName, button);
+    });
+});
+
+
+// --------------------------------------------------------------------------------------------------------------------
+
 document.getElementById("proceedToPayment").addEventListener("click", async () => {
     const totalAmount = document.getElementById("checkoutTotalAmount").innerText.replace("₹", "");
     const selectedAddress = document.querySelector("input[name='selectedAddress']:checked");
@@ -364,9 +557,10 @@ document.getElementById("proceedToPayment").addEventListener("click", async () =
         alert("Please select a delivery address!");
         return;
     }
-
+    const coupon = appliedCoupon || null;
     const addressId = selectedAddress.value;
     const cartItems = [];
+    const discountAmount = discount || 0;
 
     document.querySelectorAll(".product-item").forEach(item => {
         const productId = item.dataset.productId; 
@@ -380,7 +574,7 @@ document.getElementById("proceedToPayment").addEventListener("click", async () =
         const response = await fetch("/proceed-to-payment", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ totalAmount, addressId, items: cartItems })
+            body: JSON.stringify({ totalAmount, addressId, items: cartItems,coupon , discount: discountAmount})
         });
 
         if (response.ok) {
@@ -425,7 +619,7 @@ async function loadCheckoutSummary() {
                 <div class="product-info">
                     <p><b>${item.productName}</b></p>
                     <p class="quantity">Quantity: ${item.quantity}</p>
-                    <p class="price">Price: ₹${item.price}</p>
+                    <p class="price"> ₹${item.price}</p>
                 </div>
             `;
 
@@ -478,7 +672,7 @@ async function deleteAddress(addressId) {
 function proceedToPayment() {
     const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
     if (!selectedAddress) {
-        alert("Please select a delivery address.");
+       Swal.fire("Please select a delivery address.");
         return;
     }
     document.getElementById("proceedToPayment").click();
@@ -486,77 +680,107 @@ function proceedToPayment() {
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
-        function applyCoupon() {
-            let couponCode = document.getElementById("couponCode").value;
-            if (couponCode.trim() === "") {
-                alert("Please enter a valid coupon code.");
-                return;
-            }
-            let discount = couponCode === "DISCOUNT10" ? 10 : 0;
 
-            document.getElementById("couponApplied").innerText = discount ? couponCode : "None";
-            document.getElementById("discountAmount").innerText = discount;
-            document.getElementById("finalAmount").innerText = '<%= cart ? cart.totalPrice : 0 %>'- discount;
-        }
+function openEditModal(id, type, name, city, landmark, state, pincode, phone, altPhone) {
+    document.getElementById("editAddressId").value = id;
+    document.getElementById("editAddressType").value = type;
+    document.getElementById("editName").value = name;
+    document.getElementById("editCity").value = city;
+    document.getElementById("editLandmark").value = landmark;
+    document.getElementById("editState").value = state;
+    document.getElementById("editPincode").value = pincode;
+    document.getElementById("editPhone").value = phone;
+    document.getElementById("editAltPhone").value = altPhone;
 
-        function openEditModal(id, type, name, city, landmark, state, pincode, phone, altPhone) {
-            document.getElementById("editAddressId").value = id;
-            document.getElementById("editAddressType").value = type;
-            document.getElementById("editName").value = name;
-            document.getElementById("editCity").value = city;
-            document.getElementById("editLandmark").value = landmark;
-            document.getElementById("editState").value = state;
-            document.getElementById("editPincode").value = pincode;
-            document.getElementById("editPhone").value = phone;
-            document.getElementById("editAltPhone").value = altPhone;
+    document.getElementById("editAddressForm").action = "/edit-address/" + id;
+    document.getElementById("editAddressModal").style.display = "flex";
+}
+function openAddModal() {
+        document.getElementById("addAddressModal").style.display = "flex";
+      }
+function closeEditModal() {
+    document.getElementById("editAddressModal").style.display = "none";
+}
 
-            document.getElementById("editAddressForm").action = "/edit-address/" + id;
-            document.getElementById("editAddressModal").style.display = "flex";
-        }
-
-        function closeEditModal() {
-            document.getElementById("editAddressModal").style.display = "none";
-        }
-
-        function openAddModal() {
-            document.getElementById("addAddressModal").style.display = "flex";
-        }
-
-        function closeAddModal() {
-            document.getElementById("addAddressModal").style.display = "none";
-        }
-// ----------------------------------------------------------------------------------------------------------------------------------
-
-       
-        async function submitEditAddress(e) {
+async function submitEditAddress(e) {
     e.preventDefault();
 
-    const formData = new FormData(e.target);
+    const name = document.getElementById("editName").value.trim();
+    const city = document.getElementById("editCity").value.trim();
+    const landmark = document.getElementById("editLandmark").value.trim();
+    const state = document.getElementById("editState").value.trim();
+    const pincode = document.getElementById("editPincode").value.trim();
+    const phone = document.getElementById("editPhone").value.trim();
+    const altPhone = document.getElementById("editAltPhone").value.trim();
+
+   
+    if (!/^[A-Za-z ]{3,}$/.test(name)) {
+        return Swal.fire("Invalid Name", "Name should be at least 3 alphabets.", "error");
+    }
+
+    if (!/^[A-Za-z ]{2,}$/.test(city)) {
+        return Swal.fire("Invalid City", "City should contain only alphabets.", "error");
+    }
+
+    if (!/^[A-Za-z0-9 ]{3,}$/.test(landmark)) {
+        return Swal.fire("Invalid Landmark", "Landmark should be valid.", "error");
+    }
+
+    if (!/^[A-Za-z ]{2,}$/.test(state)) {
+        return Swal.fire("Invalid State", "State should contain only alphabets.", "error");
+    }
+
+    if (!/^[0-9]{6}$/.test(pincode)) {
+        return Swal.fire("Invalid Pincode", "Pincode must be 6 digits.", "error");
+    }
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+        return Swal.fire("Invalid Phone", "Phone number must be 10 digits.", "error");
+    }
+
+    if (!/^[0-9]{10}$/.test(altPhone)) {
+        return Swal.fire("Invalid Alternate Phone", "Alternate phone must be 10 digits.", "error");
+    }
+
+    if (phone === altPhone) {
+        return Swal.fire("Invalid Input", "Phone and alternate phone should be different.", "error");
+    }
+
     const addressId = document.getElementById("editAddressId").value;
+    const formData = {
+        addressType: document.getElementById("editAddressType").value.trim(),
+        name, city, landmark, state, pincode, phone, altPhone
+    };
 
     try {
         const response = await fetch(`/edit-address/${addressId}`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(Object.fromEntries(formData)),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
         });
 
         const result = await response.json();
 
         if (result.success) {
-            alert("Address updated successfully!");
-            closeEditModal();
-            location.reload();
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "Address updated successfully!",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                closeEditModal();
+                location.reload();
+            });
         } else {
-            alert("Failed to update address: " + result.message);
+            Swal.fire("Error", result.message || "Failed to update address.", "error");
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("Something went wrong. Please try again.");
+        Swal.fire("Error", "Something went wrong. Please try again.", "error");
     }
 }
+
 // ----------------------------------------------------------------------------------------------------------------------------------
 
     </script>

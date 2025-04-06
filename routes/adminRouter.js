@@ -10,6 +10,10 @@ const categoryController = require("../controllers/admin/categoryController");
 const productController = require("../controllers/admin/productController")
 const bannerController = require("../controllers/admin/bannerController")
 const orderController = require('../controllers/admin/orderController')
+const coupenController = require('../controllers/admin/coupenController')
+const walletController = require('../controllers/admin/walletController')
+const refferalController = require('../controllers/admin/refferalController')
+const dashboardController = require('../controllers/admin/dashboardController')
 const { upload, uploadBanner } = require("../middlewares/multer")
 router.use(flash());
 
@@ -23,7 +27,7 @@ router.get("/pageerror", adminController.pageerror);
 // Authentication Routes
 router.get("/login", adminController.loadLogin);
 router.post("/login", adminController.login);
-router.get("/dashboard", adminAuth, adminController.loadDashboard);
+
 router.get('/logout', adminController.logout);
 // -------------------------------------------------------------------------------------------------------------------------------
 
@@ -84,10 +88,33 @@ router.put("/orders/approve-return", adminAuth, orderController.approveReturnReq
 
 router.get('/orders/search', adminAuth, orderController.searchOrders);
 router.get("/orders/:orderId", adminAuth, orderController.viewDetails);
+router.get('/order/cancel-reason/:orderId', adminAuth, orderController.getCancelReason)
 router.get("/stock-management", adminAuth, orderController.viewStock);
 router.post("/update-stock/:productId", adminAuth, orderController.updateStock);
 // ----------------------------------------------------------------------------------------------------------------------------------
 
+router.get('/coupon', adminAuth, coupenController.loadCoupon)
+router.post('/coupon', adminAuth, coupenController.createCoupon)
+router.get('/coupon/:id', adminAuth, coupenController.editCoupon)
+router.put('/coupon/:id', adminAuth, coupenController.updateCoupon)
+router.delete('/coupon/:id', adminAuth, coupenController.deleteCoupon)
+
+
+router.get("/sales-report", adminAuth, orderController.getSalesReport);
+router.get("/sales-report/pdf", adminAuth, orderController.downloadPDF);
+router.get("/sales-report/excel", adminAuth, orderController.downloadExcel);
+
+router.get("/wallet-transactions", adminAuth, walletController.getWalletTransactions);
+router.get("/wallet-transaction/:userId/:transactionId", adminAuth, walletController.getTransactionDetails);
+router.get('/order/:orderId', adminAuth, walletController.getOrderDetails);
+
+router.get("/referral-offers", adminAuth, refferalController.getReferralOffers);
+router.get("/user/:id", adminAuth, refferalController.getUserWithReferrer);
+router.get("/customers", adminAuth, refferalController.getUsersWithReferral);
+
+
+router.get("/dashboard", adminAuth, dashboardController.loadDashboard);
+router.get('/api/dashboard-data', adminAuth, dashboardController.loadDashboardData);
 
 
 module.exports = router;

@@ -172,14 +172,15 @@
         </div>
         <ul>
             <li><a href="/admin/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
-                <li><a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a></li>
-                <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
-                <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
-                <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
-                <li><a href="/coupons"><i class="fa-solid fa-tag"></i> Coupons</a></li>
-                <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
-                <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
-                <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+            <li><a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a></li>
+            <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
+            <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
+            <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="/admin/coupon"><i class="fa-solid fa-tag"></i> Coupons</a></li>
+            <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
+            <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
+            <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i>Sales Report</a></li>
         </ul>
         <form action="/admin/logout" method="GET">
             <button type="submit" style="margin-top: 20px; padding: 10px 20px; border-radius: 30px; background: #333; color: white; border: none;">Logout</button>
@@ -327,6 +328,17 @@
         return false;
     }
 
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+    const images = [image1, image2, image3];
+
+    for (let i = 0; i < images.length; i++) {
+        if (images[i] && !allowedTypes.includes(images[i].type)) {
+            Swal.fire("Invalid File Type", "Only PNG and JPG files are allowed.", "error");
+            return false;
+        }
+    }
+
+
     return true;
 }
 
@@ -344,17 +356,24 @@ let currentImageIndex;
 function handleFileSelect(event, index) {
     const file = event.target.files[0];
     if (file) {
+        // Allowed file types
+        const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+        if (!allowedTypes.includes(file.type)) {
+            Swal.fire("Invalid File Type", "Only PNG and JPG files are allowed.", "error");
+            event.target.value = ""; // Clear the invalid file input
+            return;
+        }
+
         currentImageIndex = index;
         const reader = new FileReader();
         reader.onload = function (e) {
-            document.getElementById(`preview${index}`).src = e.target.result; 
+            document.getElementById(`preview${index}`).src = e.target.result;
             document.getElementById('cropperImage').src = e.target.result;
             openCropper();
         };
         reader.readAsDataURL(file);
     }
 }
-
 function openCropper() {
     document.getElementById('cropperModal').style.display = 'block';
     const image = document.getElementById('cropperImage');

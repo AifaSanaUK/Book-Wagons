@@ -68,14 +68,6 @@ const verifyLogin = async (req, res) => {
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-const loadDashboard = async (req, res) => {
-    try {
-        res.render("admin/dashboard");
-    } catch (error) {
-        console.error("Error rendering dashboard:", error);
-        res.redirect("/admin/pageerror");
-    }
-};
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const pageerror = (req, res) => {
@@ -99,7 +91,7 @@ module.exports = {
     loadLogin,
     login,
     verifyLogin,
-    loadDashboard,
+
     pageerror,
     logout
 };

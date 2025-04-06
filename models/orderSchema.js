@@ -6,7 +6,7 @@ const orderSchema = new Schema({
         type: String,
         default: () => uuidv4(),
         unique: true
-    }, user: {  // 🔹 Add user reference
+    }, user: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true
@@ -41,7 +41,7 @@ const orderSchema = new Schema({
     },
     address: {
         type: Schema.Types.ObjectId,
-        ref: "Address",
+
         required: true
     },
     invoiceDate: {
@@ -51,21 +51,52 @@ const orderSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ["Pending", "Shipped", "Delivered", "Cancelled", "Return Requested", "Return Approved", "Return Rejected"]
+        enum: ["Pending", "Shipped", "Failed", "Delivered", "Cancelled", "Return Requested", "Return Approved", "Return Rejected"]
     },
     createdOn: {
         type: Date,
         default: Date.now,
         required: true
     },
-    couponApplied: {
-        type: Boolean,
-        default: false
-    }, paymentMethod: {
+    couponCode: {
+        type: String,
+        default: null
+    },
+    discountAmount: {
+        type: Number,
+        default: 0
+    },
+    deliveryCharge: { type: Number, default: 50 },
+
+
+    paymentMethod: {
         type: String,
         required: true,
-        enum: ["cod", "Credit Card", "Debit Card", "UPI", "Net Banking"],
+
+        enum: ["cod", "Razorpay", "Credit Card", "Debit Card", "UPI", "Net Banking", "wallet"],
         default: "cod"
+
+    }, razorpayOrderId: {
+        type: String
+    },
+    razorpayPaymentId: {
+        type: String
+    },
+    cancelReason: {
+        type: String,
+        default: null
+    },
+    cancelledAt: {
+        type: Date,
+        default: null
+    },
+    returnReason: {
+        type: String,
+        default: null
+    },
+    returnRequestedAt: {
+        type: Date,
+        default: null
     }
 })
 const Order = mongoose.model("Order", orderSchema)

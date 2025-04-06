@@ -1,10 +1,11 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         /* General Styles */
         body {
@@ -14,19 +15,30 @@
             padding: 0;
             color: #333;
             display: flex;
+            flex-direction: column;
             min-height: 100vh;
+        }
+
+        /* Header Styles */
+        header {
+            width: 100%;
+            z-index: 1000;
         }
 
         /* Sidebar Styles */
         .sidebar {
-            width: 250px; /* Fixed width for sidebar */
+            width: 250px;
             background: #ffeef6;
             color: rgb(77, 77, 77);
             padding: 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            position: fixed; /* Fixed position */
-            height: 100vh; /* Full height */
-            overflow-y: auto; /* Scrollable if content overflows */
+            position: fixed;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            margin-top: 10px; /* Adjust based on header height */
+            overflow-y: auto;
+            z-index: 100;
         }
 
         .sidebar h4 {
@@ -45,6 +57,7 @@
             font-size: 1rem;
             border-radius: 5px;
             transition: background-color 0.3s ease;
+            margin-bottom: 5px;
         }
 
         .sidebar a:hover {
@@ -53,15 +66,18 @@
 
         /* Main Content Styles */
         .main-content {
-            flex: 1; /* Take remaining space */
-            margin-left: 250px; /* Offset for sidebar */
-            padding: 20px;
-            overflow-y: auto; /* Scrollable if content overflows */
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+            margin-top: 80px; /* Adjust based on header height */
+            overflow-y: auto;
+            background-color: #f5f7fa;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
         }
 
         h2 {
@@ -74,19 +90,28 @@
         /* Order Card Styles */
         .order-card {
             background: white;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-       
         .order-card h4 {
             font-size: 18px;
             font-weight: 500;
             margin-bottom: 15px;
             color: #34495e;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .order-card h4 p {
+            margin: 5px 0;
         }
 
         .order-card h4 strong {
@@ -97,7 +122,8 @@
         .order-card table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 15px;
+            table-layout: fixed;
         }
 
         .order-card th,
@@ -105,6 +131,7 @@
             padding: 12px;
             text-align: center;
             border: 1px solid #e0e0e0;
+            vertical-align: middle;
         }
 
         .order-card th {
@@ -122,12 +149,14 @@
             width: 80px;
             height: 80px;
             object-fit: cover;
+            display: block;
+            margin: 0 auto;
         }
 
         .order-card h3 {
             font-size: 18px;
             font-weight: 600;
-            margin-top: 15px;
+            margin-top: 20px;
             color: #2c3e50;
         }
 
@@ -143,7 +172,18 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
         }
 
         .cancel-btn {
@@ -164,99 +204,224 @@
             background: #2980b9;
         }
 
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Invoice Icon */
+        .invoice-icon {
+            font-size: 20px;
+            color: #7f8c8d;
+            text-decoration: none;
+            margin-left: auto;
+            transition: color 0.3s ease;
+        }
+
+        .invoice-icon:hover {
+            color: #3498db;
+        }
+
+        /* Status Styles */
+        .status {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
         /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 220px;
+                padding: 15px;
+            }
+            
+            .main-content {
+                margin-left: 220px;
+                padding: 20px;
+            }
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
                 height: auto;
                 position: relative;
+                margin-top: 0;
                 margin-bottom: 20px;
+                padding: 15px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
 
             .main-content {
                 margin-left: 0;
+                padding: 15px;
+                margin-top: 20px;
             }
 
             .order-card table {
                 display: block;
                 overflow-x: auto;
+                white-space: nowrap;
             }
 
             .order-card th,
             .order-card td {
                 min-width: 120px;
             }
-        }.invoice-icon{
-          font-size: 20px;
-          color: grey;
-          text-decoration: none;
-          margin-left: 10px;
-        }
+            
+            .order-card h4 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .invoice-icon {
+                margin-left: 0;
+            }
+        }.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination .btn {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 5px;
+    text-decoration: none;
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+}
+
+.pagination .btn.active {
+    background-color: #2c3e50;
+}
+
+.pagination .btn:hover {
+    background-color: #2980b9;
+}
+
     </style>
 </head>
 <body>
     <%- include('../partials/header') %>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <h4>Dashboard</h4>
         <a href="/userProfile">Profile</a>
         <a href="/addressButton" id="addressLink">Address</a>
         <a href="/order">Order</a>
         <a href="/wallet">Wallet</a>
-        <a href="/referrals">Referrals</a>
+     
         <a href="/logoutt">Logout</a>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
+    </div><div class="main-content">
         <div class="container">
             <h2>My Orders</h2>
             <% orders.forEach(order => { %>
                 <div class="order-card">
                     <h4>
-                        <strong>Order ID:</strong> <%= order.orderId %> | 
-                        <strong>Date:</strong> <%= order.createdOn.toLocaleDateString() %> | 
-                        <strong>Status:</strong> <span style=`color:<%= order.status === 'Delivered' ? '#27ae60' : order.status === 'Cancelled' ? '#e74c3c' : '#3498db' %>`><%= order.status %></span>
-                        
-                      <a href="/generate-invoice/<%= order._id %>" class="invoice-icon">
-                            <i class="fas fa-file-download"></i>
-                        </a>
+                        <p><strong>Order <%= order.orderId %>:</strong> Date: <%= new Date(order.createdOn).toLocaleString() %></p>
+                        <span class="status" style=`color:<%= order.status === 'Delivered' ? '#27ae60' : order.status === 'Cancelled' ? '#e74c3c' : order.status === 'Failed' ? '#e74c3c' : '#3498db' %>`>
+                            <strong>Status:</strong> <%= order.status %>
+                        </span>
+                        <% if (order.status !== 'Failed') { %>
+                            <a href="/generate-invoice/<%= order._id %>" class="invoice-icon" title="Download Invoice">
+                                <i class="fas fa-file-download"></i>
+                            </a>
+                        <% } %>
                     </h4>
+    
+                    <% if (order.status === 'Failed') { %>
+                        <p style="color: red; font-weight: bold;">Payment Failed</p>
+                    <% } %>
+    
+                    <!-- ✅ Product Details Visible for All Orders -->
                     <table>
                         <thead>
                             <tr>
-                                <th>Image</th>
+                                <th style="width: 100px;">Image</th>
                                 <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
+                                <th style="width: 100px;">Quantity</th>
+                                <th style="width: 120px;">Price</th>
+                                <th style="width: 120px;">Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             <% order.orderedItems.forEach(item => { %>
                                 <tr>
-                                    <td><img src="<%= item.product.productImage[0] %>" alt="Product Image"></td>
+                                    <td><img src="<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>"></td>
                                     <td><%= item.product.productName %></td>
                                     <td><%= item.quantity %></td>
-                                    <td>₹<%= item.price %></td>
-                                    <td>₹<%= item.quantity * item.price %> </td>
-                                    
+                                    <td>₹<%= item.price.toFixed(2) %></td>
+                                    <td>₹<%= (item.quantity * item.price).toFixed(2) %></td>
                                 </tr>
                             <% }) %>
                         </tbody>
                     </table>
-                    <h3><strong>Grand Total:</strong> ₹<%= order.finalAmount %></h3><a href="/order/tracking/<%= order.orderId %>" class="btn btn-primary">View Details</a
-                   
-                    <% if (order.status === 'Shipped') { %>
-                        <button class="btn track-btn" onclick="trackOrder('<%= order.orderId %>')">Track Order</button>
-                    <% } %>
+                    
+                    <h3><strong>Grand Total:</strong> ₹<%= order.finalAmount.toFixed(2) %></h3>
+    
+                    <div class="order-actions">
+                        <a href="/order/tracking/<%= order.orderId %>" class="btn btn-primary">View Details</a>
+                        <% if (order.status === 'Shipped') { %>
+                            <button class="btn track-btn" onclick="trackOrder('<%= order.orderId %>')">Track Order</button>
+                        <% } %>
+                       
+                        
+                    </div>
                 </div>
             <% }) %>
         </div>
+    
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>" class="btn">Previous</a>
+            <% } %>
+    
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>" class="btn <%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+            <% } %>
+    
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>" class="btn">Next</a>
+            <% } %>
+        </div>
     </div>
+    
 
     <script>
+                // -------------------------------------------------------------------------------------------------------
+
+               // ✅ Fetching correct order ID
+               function retryPayment(orderId) {
+    if (!orderId) {
+        alert("Order ID not found!");
+        return;
+    }
+
+    fetch(`/payment/retry-payment/${orderId}`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.paymentPage;
+        } else {
+            alert(data.message || "Failed to retry payment.");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Something went wrong. Please try again.");
+    });
+}
+
+
+
         function cancelOrder(orderId) {
             if (confirm("Are you sure you want to cancel this order?")) {
                 fetch(`/cancel-order/${orderId}`, { method: 'POST' })
@@ -278,7 +443,7 @@
 
         function trackOrder(orderId) {
             alert(`Tracking order: ${orderId}`);
-            // Add tracking logic here
+      
         }
     </script>
 </body>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Transaction Details</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #111;
+            display: flex;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+        }
+        .sidebar {
+            width: 250px;
+            background: #828282;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            text-align: center;
+        }
+        .profile-section {
+            padding: 20px;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+        .sidebar ul li:hover {
+            background: #150107;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar ul li a i {
+            margin-right: 15px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 40px;
+            width: 100%;
+        }
+        
+        .header {
+            background: #ffffff;
+            padding: 30px;
+            text-align: center;
+            width: calc(100% - 250px);
+            position: fixed;
+            top: 0;
+            left: 250px;
+            z-index: 1000;
+        }
+        .header h1 {
+            color: #000000;
+            margin: 0;
+        }
+        #button {
+            border-radius: 30px;
+            background-color: rgb(141, 141, 141);
+            margin-top: 30px;
+            padding: 10px 20px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #button:hover {
+            background-color: black;
+            color: #ffffff;
+        }
+        
+        /* Transaction Details Styles */
+        .transaction-container {
+            background-color: #222;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 80px;
+            margin-left: 300px;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .transaction-header {
+            border-bottom: 1px solid #444;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .transaction-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            width: 180px;
+            color: #aaa;
+        }
+        
+        .detail-value {
+            flex: 1;
+        }
+        
+        .credit {
+            color: #4CAF50;
+        }
+        
+        .debit {
+            color: #F44336;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #333;
+            color: white;
+            border: 1px solid #444;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #444;
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        /* Order Link */
+        .order-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #2196F3;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .order-link:hover {
+            color: #0b7dda;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile-section">
+            <img src="/images/WhatsApp Image 2025-03-04 at 21.15.51_2d23995d.jpg" alt="Profile Picture" class="profile-pic">
+            <h3>Aifa Sana</h3>
+        </div>
+        <ul>
+            <li><a href="/admin/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+            <li><a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a></li>
+            <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
+            <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
+            <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="/admin/coupon"><i class="fa-solid fa-tag"></i> Coupons</a></li>
+            <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
+            <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
+            <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
+            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i>Sales Report</a></li>
+            <li><a href="/admin/wallet-transactions"><i class="fa-solid fa-box"></i> Wallet Management</a></li>
+            
+            <div>
+                <form action="/admin/logout" method="GET">
+                    <button type="submit" id="button">Logout</button>
+                </form>
+            </div>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="header">
+            <h1>Transaction Details</h1>    
+        </div>
+        
+        <div class="transaction-container">
+            <div class="transaction-header">
+                <h2>Wallet Transaction Information</h2>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">User:</div>
+                <div class="detail-value"><%= user.name %> (<%= user.email %>)</div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Transaction ID:</div>
+                <div class="detail-value"><%= transaction._id %></div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Date:</div>
+                <div class="detail-value"><%= new Date(transaction.date).toLocaleString() %></div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Type:</div>
+                <div class="detail-value <%= transaction.type === 'credit' ? 'credit' : 'debit' %>">
+                    <%= transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1) %>
+                </div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Amount:</div>
+                <div class="detail-value">₹<%= transaction.amount.toFixed(2) %></div>
+            </div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Description:</div>
+                <div class="detail-value"><%= transaction.description %></div>
+            </div>
+            
+            <% if (transaction.description.includes("Order")) { %>
+                <div class="detail-row">
+                    <div class="detail-label">Related Order:</div>
+                    <div class="detail-value">
+                        <% if (transaction.orderId && String(transaction.orderId).trim().length > 0) { %>
+                            <a href="/admin/order/<%= transaction.orderId %>" class="order-link">
+                                <i class="fas fa-external-link-alt"></i> View Order #<%= transaction.orderId %>
+                            </a>
+                        <% } else { %>
+                            <p>No related order.</p>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+            
+            
+            <div class="action-buttons">
+                <a href="/admin/wallet-transactions" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Transactions
+                </a>
+            </div>
+            
+                
+            </div>
+        </div>
+    
+</body>
+</html>

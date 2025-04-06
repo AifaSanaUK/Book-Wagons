@@ -7,7 +7,8 @@ const profileController = require("../controllers/user/profileController");
 const { userAuth } = require("../middlewares/auth");
 const cartController = require("../controllers/user/cartController")
 const wishlistController = require("../controllers/user/wishlistController")
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+const { isLoggedIn } = require('../middlewares/auth')
+const { preventCache } = require("../middlewares/cache")
 
 
 router.get('/pageNotFound', userController.pageNotFound)
@@ -16,11 +17,11 @@ router.get('/shop', userController.loadShoppingPage)
 router.get('/filter', userController.filterProduct)
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-router.get("/signup", userController.loadSignupPage)
-router.post('/signup', userController.signup)
-router.get("/verifyotp", userController.loadVerifyOtpPage)
-router.post("/resendotp", userController.resendOtp);
-router.post("/verifyotp", userController.verifyOtp)
+router.get("/signup", preventCache, userController.loadSignupPage)
+router.post('/signup', preventCache, userController.signup)
+router.get("/verifyotp", preventCache, userController.loadVerifyOtpPage)
+router.post("/resendotp", preventCache, userController.resendOtp);
+router.post("/verifyotp", preventCache, userController.verifyOtp)
 router.get("/auth/google", passport.authenticate('google', { scope: ["profile", "email"] }));
 router.get("/auth/google/callback",
     passport.authenticate("google", { failureRedirect: "/signup" }),
@@ -32,8 +33,8 @@ router.get("/auth/google/callback",
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-router.get("/login", userController.loadLogin)
-router.post("/login", userController.login)
+router.get("/login", preventCache, userController.loadLogin)
+router.post("/login", preventCache, userController.login)
 router.get("/logoutt", userController.logout)
 router.post("/logoutt", userController.logout)
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -42,8 +43,8 @@ router.post("/logoutt", userController.logout)
 router.get('/forgetpassword', profileController.getForgetPassPage)
 router.post('/forget-email-valid', profileController.forgetEmailValid)
 router.get("/verify-otp", profileController.verifyOOtp);
-router.post("/verify-otp", profileController.verifyOOtp);
-router.get("/forgetpassOtp", profileController.OtpPage);
+router.post("/verify-otp", preventCache, profileController.verifyOOtp);
+router.get("/forgetpassOtp", preventCache, profileController.OtpPage);
 router.post('/resend-otp', profileController.resendOtp)
 router.post('/validate-otp', profileController.validateOtp)
 router.get('/reset-password', profileController.resetpassword)

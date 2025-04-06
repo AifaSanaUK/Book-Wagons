@@ -104,7 +104,7 @@ const verifyOOtp = async (req, res) => {
     try {
         const { otp } = req.body;
 
-        console.log("🔍 Checking session during OTP verification:", req.session);
+        console.log(" Checking session during OTP verification:", req.session);
         if (!req.session.userOtp || !req.session.email || !req.session.otpExpiry) {
             console.log(" Session expired or missing!");
             return res.status(400).json({ success: false, message: "Session expired. Please request a new OTP." });
@@ -147,7 +147,7 @@ const OtpPage = async (req, res) => {
 
 const resendOtp = async (req, res) => {
     try {
-        console.log("🔍 Checking session before resending OTP:", req.session);
+        console.log(" Checking session before resending OTP:", req.session);
         if (!req.session.email) {
             console.log("Session expired or missing!");
             return res.status(400).json({ success: false, message: "Session expired. Please request a new OTP." });
@@ -181,7 +181,7 @@ const validateOtp = async (req, res) => {
     try {
         const { otp } = req.body;
 
-        console.log("🔍 Checking session during OTP validation:", req.session);
+        console.log("Checking session during OTP validation:", req.session);
         if (!req.session.userOtp || !req.session.email) {
             console.log(" Session expired or missing!");
             return res.status(400).json({ success: false, message: "Session expired. Please request a new OTP." });
@@ -441,8 +441,8 @@ const verifyChangePassOtp = async (req, res) => {
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 const updateProfile = async (req, res) => {
-    console.log("Session Data:", req.session);  // Check if session exists
-    console.log("User ID:", req.session?.user);  // Check if user ID is available
+    console.log("Session Data:", req.session);
+    console.log("User ID:", req.session?.user);
 
     if (!req.session.user) {
         return res.status(401).json({ success: false, message: "Unauthorized: No user session" });
@@ -450,7 +450,6 @@ const updateProfile = async (req, res) => {
 
     const { name, phone } = req.body;
 
-    // Backend validation for phone number
     if (!/^\d{10}$/.test(phone)) {
         return res.status(400).json({ success: false, message: "Phone number must be exactly 10 digits!" });
     }
@@ -475,20 +474,21 @@ const updateProfile = async (req, res) => {
 // ---------------------------------------------------------------------------------------------------------------
 const addressButton = async (req, res) => {
     try {
-        const userId = req.session.user; // Ensure session has user ID
-        console.log("User ID:", userId); // Debugging
+        const userId = req.session.user;
+        console.log("User ID:", userId);
 
         const addressData = await Address.find({ userId: userId });
 
-        console.log("Fetched Address Data:", addressData); // Debugging
+        console.log("Fetched Address Data:", addressData);
 
         res.render('user/addressButton', { userAddress: addressData[0] || { address: [] } });
-        // Pass the first object or an empty object with an address array
+
     } catch (error) {
         console.error("Error fetching address data:", error);
         res.redirect('/pageNotFound');
     }
 };
+// ----------------------------------------------------------------------------------------------------
 
 
 const addAddress = async (req, res) => {
