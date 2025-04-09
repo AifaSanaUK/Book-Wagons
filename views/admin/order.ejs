@@ -39,7 +39,7 @@
             padding: 0;
         }
         .sidebar ul li {
-            padding: 15px;
+            padding: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -209,11 +209,13 @@
             <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
             <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
             <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="/admin/referral-offers"><i class="fas fa-chart-bar"></i> Refferal</a></li>
             <li><a href="/admin/coupon"><i class="fa-solid fa-tag"></i> Coupons</a></li>
             <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
             <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
-            <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
-            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i>Sales Report</a></li>
+            <li><a href="/admin/stock-management"><i class="fa-solid fa-boxes-stacked"></i> Stock Management</a></li>
+            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i> Sales Report</a></li>
+            <li><a href="/admin/wallet-transactions"><i class="fa-solid fa-wallet"></i> Wallet Management</a></li>
             <div>
                 <form action="/admin/logout" method="GET">
                     <button type="submit" id="button">Logout</button>
@@ -359,7 +361,7 @@
     });
 }
 
-
+// ----------------------------------------------------------------------------------------------------------------
 function showCancelReason(orderId) {
     console.log("Order ID Sent:", orderId); 
 

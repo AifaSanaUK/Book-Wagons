@@ -59,7 +59,7 @@
         }
         
         .sidebar ul li {
-            padding: 12px 20px;
+            padding: 12px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
@@ -386,6 +386,8 @@
             <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
             <li><a href="/admin/stock-management"><i class="fa-solid fa-boxes-stacked"></i> Stock Management</a></li>
             <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i> Sales Report</a></li>
+
+            <li><a href="/admin/wallet-transactions"><i class="fa-solid fa-wallet"></i> Wallet Management</a></li>
         </ul>
         <div class="logout-container">
             <form action="/admin/logout" method="GET">
@@ -504,7 +506,7 @@
 
     if (endDate <= startDate) {
         Swal.fire("End date must be after start date!");
-        this.value = ""; // Clear invalid input
+        this.value = ""; 
     }
 });
     </script>

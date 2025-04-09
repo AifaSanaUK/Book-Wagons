@@ -48,7 +48,7 @@
             padding: 0;
         }
         .sidebar ul li {
-            padding: 15px;
+            padding: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -77,12 +77,12 @@
     margin-left: 250px;
     padding: 20px;
     width: calc(100% - 250px);
-    overflow-y: auto;  /* Allows scrolling */
-    max-height: 100vh;  /* Prevents content from getting cut off */
+    overflow-y: auto;  
+    max-height: 100vh;  
 }
 
 .header {
-    position: relative;  /* Change from fixed to relative to prevent overlapping */
+    position: relative;  
     width: 100%;
 }
 
@@ -182,9 +182,9 @@
         }
         .image-upload {
     display: flex;
-    flex-direction: column; /* Stack input and image vertically */
-    align-items: center; /* Center align */
-    gap: 10px; /* Space between input and image */
+    flex-direction: column; 
+    align-items: center; 
+    gap: 10px; 
 }
 
 .image-preview {
@@ -211,10 +211,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px; /* Adds spacing between image uploads */
+    margin-bottom: 20px; 
     padding: 10px;
-    background: #2c2c2c; /* Optional: Dark background */
-    border-radius: 10px; /* Optional: Rounded corners */
+    background: #2c2c2c; 
+    border-radius: 10px; 
 }
 
 .custom-file-label {
@@ -224,8 +224,8 @@
 }
 
 .image-preview {
-    width: 120px; /* Adjust width */
-    height: 120px; /* Adjust height */
+    width: 120px;
+    height: 120px; 
     object-fit: cover;
     border-radius: 5px;
     margin: 10px 0;
@@ -259,11 +259,13 @@
             <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
             <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
             <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="/admin/referral-offers"><i class="fas fa-chart-bar"></i> Refferal</a></li>
             <li><a href="/admin/coupon"><i class="fa-solid fa-tag"></i> Coupons</a></li>
             <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
             <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
-            <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
-            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i>Sales Report</a></li>
+            <li><a href="/admin/stock-management"><i class="fa-solid fa-boxes-stacked"></i> Stock Management</a></li>
+            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i> Sales Report</a></li>
+            <li><a href="/admin/wallet-transactions"><i class="fa-solid fa-wallet"></i> Wallet Management</a></li>
         </ul>
         <form action="/admin/logout" method="GET">
             <button type="submit" style="margin-top: 20px; padding: 10px 20px; border-radius: 30px; background: #333; color: white; border: none;">Logout</button>
@@ -427,7 +429,7 @@ function previewImage(event, index) {
         
         if (!allowedTypes.includes(file.type)) {
             Swal.fire("Invalid File", "Only JPG and PNG formats are allowed.", "error");
-            event.target.value = ""; // Clear the file input
+            event.target.value = ""; 
             return;
         }
 

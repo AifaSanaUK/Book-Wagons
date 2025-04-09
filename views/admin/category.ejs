@@ -27,29 +27,35 @@
             position: fixed;
             text-align: center;
         }
+        
         .profile-section {
             padding: 20px;
         }
+        
         .profile-pic {
             width: 80px;
             height: 80px;
             border-radius: 50%;
             object-fit: cover;
         }
+        
         .sidebar ul {
             list-style: none;
             padding: 0;
         }
+        
         .sidebar ul li {
-            padding: 15px;
+            padding: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: start;
         }
+        
         .sidebar ul li:hover {
             background: #150107;
         }
+        
         .sidebar ul li a {
             text-decoration: none;
             color: white;
@@ -57,8 +63,10 @@
             font-size: 16px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding-left: 10px;
+        }
+        
+        .sidebar ul li a i {
+            margin-right: 15px;
         }
         .content {
             margin-left: 250px;
@@ -198,11 +206,13 @@
             <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
             <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
             <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="/admin/referral-offers"><i class="fas fa-chart-bar"></i> Refferal</a></li>
             <li><a href="/admin/coupon"><i class="fa-solid fa-tag"></i> Coupons</a></li>
             <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
             <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
-            <li><a href="/admin/stock-management"><i class="fa-solid fa-image"></i>Stock Management</a></li>
-            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i>Sales Report</a></li>
+            <li><a href="/admin/stock-management"><i class="fa-solid fa-boxes-stacked"></i> Stock Management</a></li>
+            <li><a href="/admin/sales-report"><i class="fas fa-chart-bar"></i> Sales Report</a></li>
+            <li><a href="/admin/wallet-transactions"><i class="fa-solid fa-wallet"></i> Wallet Management</a></li>
     </ul>
     <form action="/admin/logout" method="GET">
         <button type="submit" style="margin-top: 20px; padding: 10px 20px; border-radius: 30px; background: #333; color: white; border: none;">Logout</button>
@@ -242,21 +252,21 @@
         </tbody>
     </table>
     <div class="pagination">
-    <!-- Previous Button -->
+    
     <% if (currentPage > 1) { %>
         <a href="?page=<%= currentPage - 1 %>" class="page-link">Previous</a>
     <% } else { %>
         <span class="page-link disabled">Previous</span>
     <% } %>
 
-    <!-- Page Numbers -->
+  
     <% for (let i = 1; i <= totalPages; i++) { %>
         <a href="?page=<%= i %>" class="page-link <%= i === currentPage ? 'active' : '' %>">
             <%= i %>
         </a>
     <% } %>
 
-    <!-- Next Button -->
+   
     <% if (currentPage < totalPages) { %>
         <a href="?page=<%= currentPage + 1 %>" class="page-link">Next</a>
     <% } else { %>

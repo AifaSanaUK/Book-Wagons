@@ -225,7 +225,54 @@
             font-size: 7px;
            font-weight: bold;
     color: #333;
-        }
+        }@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        top: 0;
+        margin-bottom: 20px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        margin-top: 0;
+        padding: 15px;
+    }
+
+    .row-cols-5 > * {
+        flex: 0 0 auto;
+        width: 100%; /* Full width for each card on mobile */
+    }
+
+    .product-card {
+        margin-bottom: 20px;
+    }
+
+    .pagination a {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    h5 {
+        font-size: 14px !important;
+    }
+
+    .sidebar h5 {
+        margin-top: 10px;
+    }
+
+    .wishlist {
+        font-size: 20px;
+        top: 5px;
+        right: 5px;
+    }
+
+    .product-card img {
+        height: 180px; /* Larger images for mobile view */
+    }
+}
+
     </style>
 </head> 
 <body>
@@ -262,7 +309,8 @@
 
 <div class="main-content">
     <div class="container mt-4">
-        <div class="row row-cols-5" id="product-list">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5" id="product-list">
+
             <% for(let i = 0; i < products.length; i++) { %>
                 <div class="col mb-4 product-item" data-name="<%= products[i].productName.toLowerCase() %>" data-price="<%= products[i].salePrice %>" data-category="<%= category.find(cat => cat._id.toString() === products[i].category.toString())?.name || 'Unknown' %>">
                     <div class="product-card">

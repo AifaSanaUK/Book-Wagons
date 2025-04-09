@@ -350,6 +350,8 @@
 g */
     .nav-item.dropdown:hover .dropdown-content {
         display: block;
+    }h5{
+      color: #333;
     }
     #logoutBtn {
     background-color: #ffffff;
@@ -360,7 +362,54 @@ g */
     cursor: pointer;
     font-size: 16px;
     width: 100%; 
+}@media (max-width: 767px) {
+  #footer {
+    text-align: center;
+  }
+
+  #footer .footer-top-area .footer-menu {
+    margin-bottom: 30px;
+  }
+
+  #footer .footer-top-area .footer-menu img {
+    max-width: 150px;
+    margin-bottom: 15px;
+  }
+
+  #footer .social-links ul {
+    justify-content: center;
+    padding-left: 0;
+  }
+
+  #footer .footer-menu h5.widget-title {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  #footer .footer-menu ul.menu-list {
+    padding-left: 0;
+  }
+
+  #footer .footer-menu ul.menu-list li {
+    margin-bottom: 8px;
+  }
+
+  #footer .contact-item p {
+    font-size: 0.95rem;
+  }
 }
+.custom-footer {
+    background-color: #ffeef6;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.custom-footer .container {
+    max-width: 1140px; /* or 960px, 720px depending on how narrow you want it */
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
 
         </style>
     </head>
@@ -443,7 +492,7 @@ g */
                   <div class="banner-content">
                     <h2>The Fine Print Book Collection</h2>
                     <p>Best Offer Save 30%. Grab it now!</p>
-                    <a href="index.html" class="btn mt-3">Shop Collection</a>
+                    <a href="/shop" class="btn mt-3">Shop Collection</a>
                   </div>
                 </div>
                 <div class="col-md-6 text-center">
@@ -507,86 +556,6 @@ g */
 
 
 
-<section id="limited-offer" class="padding-large"
-style="background-image: url(images/banner-image-bg-1.jpg); background-size: cover; background-repeat: no-repeat; background-position: center; height: 800px;">
-<div class="container">
-  <div class="row d-flex align-items-center justify-content-center">
-
-    <!-- First Image (Left) -->
-    <div class="col-md-4 text-center">
-      <div class="image-holder">
-        <img src="\images\books-world_1013366-1079.jpg" alt="Offer Image 1" class="img-fluid rounded">
-      </div>
-    </div>
-
-    <!-- Middle Text/Content -->
-    <div class="col-md-4 text-center">
-      <h2 class="text-white">Limited Time Offer!</h2>
-      <p class="text-white">Get exclusive discounts on our latest collection.</p>
-      <button class="btn btn-light">Shop Now</button>
-    </div>
-
-    <!-- Second Image (Right) -->
-    <div class="col-md-4 text-center">
-      <div class="image-holder">
-        <img src="\images\books-world_1013366-1079.jpg" alt="Offer Image 2" class="img-fluid rounded">
-      </div>
-    </div>
-  </div>
-
-  <!-- Another Row for Third Image -->
-  <!-- <div class="col-md-4 text-center">
-      <div class="image-holder">
-        <img src="\images\books-world_1013366-1079.jpg" alt="Offer Image 3" class="img-fluid rounded">
-      </div>
-    </div>
-  </div> -->
-
-</div>
-</section>
-
-
-
-    
-<section id="limited-offer" class="padding-large"
-style="background-image: url(/images/banner-image-bg-1.jpg); background-size: cover; background-repeat: no-repeat; background-position: center; height: 800px;">
-<div class="container">
-  <div class="row">
-      <div class="col-lg-12">
-          <div class="image-holder"></div>
-      </div>
-      <div class="col-md-5 offset-md-1 mt-5 mt-md-0 text-center text-md-start">
-          <li data-filter=".new-arrivals">New Arrivals</li>
-      </div>
-  </div>
-
-  <div class="row">
-      <% for(let i = 0; i < products.length; i++) { %>
-      <div class="col-lg-3 col-md-4 col-12 col-sm-6">
-          <div class="product-cart-wrap mb-30">
-              <div class="product-img-action-wrap">
-                  <div class="product-img product-img-zoom">
-                      <a href="/productDetails?id=<%= products[i]._id %>">
-                        <img src="/<%= products[i].productImage && products[i].productImage[0] ? products[i].productImage[0] : 'uploads/productImages/aifa.jpg' %>" 
-                        class="default-img" alt="<%= products[i].productName %>">                      </a>
-                  </div>
-              </div>
-              <div class="product-action-1">
-                  <a aria-label="Add to Wishlist" class="action-btn-hover-up" href="/addToWishlist?id=<%= products[i]._id %>">
-                      ❤️
-                  </a>
-              </div>
-          </div>
-          <div class="product-content-wrap">
-              <h6><%= products[i].productName %></h6>
-              <h5>$<%= products[i].salePrice %></h5>
-              <a href="/addToCart?id=<%= products[i]._id %>" class="btn btn-primary">Add to Cart</a>
-          </div>
-      </div>
-      <% } %>
-  </div>
-</div>
-</section>
 
 
 
@@ -595,18 +564,14 @@ style="background-image: url(/images/banner-image-bg-1.jpg); background-size: co
 
 
 
-
-
-    <footer id="footer" class="padding-large">
+    <footer id="footer" class="custom-footer">
       <div class="container">
         <div class="row">
           <div class="footer-top-area">
             <div class="row d-flex flex-wrap justify-content-between">
               <div class="col-lg-3 col-sm-6 pb-3">
                 <div class="footer-menu">
-                  <img src="images/main-logo.png" alt="logo" class="img-fluid mb-2">
-                  <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio
-                    erat nullam fringilla.</p>
+                 <p>BOOK WAGON</p>
                   <div class="social-links">
                     <ul class="d-flex list-unstyled">
                       <li>

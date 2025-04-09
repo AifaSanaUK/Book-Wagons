@@ -40,7 +40,7 @@
         }
         
         .sidebar ul li {
-            padding: 15px;
+            padding: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -224,6 +224,7 @@
             <li><a href="/admin/category"><i class="fa-solid fa-layer-group"></i> Genre</a></li>
             <li><a href="/admin/addProducts/"><i class="fa-solid fa-plus-circle"></i> Add Products</a></li>
             <li><a href="/admin/products"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="/admin/referral-offers"><i class="fas fa-chart-bar"></i> Refferal</a></li>
             <li><a href="/admin/coupon"><i class="fa-solid fa-tag"></i> Coupons</a></li>
             <li><a href="/admin/banner"><i class="fa-solid fa-image"></i> Banner</a></li>
             <li><a href="/admin/orders"><i class="fa-solid fa-cart-shopping"></i> Orders</a></li>
@@ -254,11 +255,11 @@
         </div>
         
         <div class="data-container">
-            <!-- First Row: Text Lists -->
+          
             <div class="section-title">Sales Data Overview</div>
             <div class="data-row">
                 <div class="text-container">
-                    <h3>Top 5 Best-Selling Categories</h3>
+                    <h3>Top  Best-Selling Categories</h3>
                     <% if (bestSellingCategories && bestSellingCategories.length > 0) { %>
                         <ul>
                             <% bestSellingCategories.forEach(category => { %>
@@ -274,7 +275,7 @@
                 </div>
                 
                 <div class="text-container">
-                    <h3>Top 5 Best-Selling Products</h3>
+                    <h3>Top  Best-Selling Products</h3>
                     <% if (bestSellingProducts && bestSellingProducts.length > 0) { %>
                         <ul>
                             <% bestSellingProducts.forEach(product => { %>
@@ -290,7 +291,7 @@
                 </div>
             </div>
             
-            <!-- Second Row: Charts -->
+       
             <div class="section-title">Visual Analytics</div>
             <div class="data-row">
                 <div class="chart-container">
@@ -325,7 +326,6 @@
             loadingIndicator.style.textAlign = 'center';
             loadingIndicator.style.padding = '20px';
             
-            // Add loading indicators
             document.querySelectorAll('.text-container, .chart-container').forEach(container => {
                 const existingContent = container.querySelector('ul, canvas, .no-data');
                 if (existingContent) {
@@ -344,7 +344,7 @@
                 const data = await response.json();
                 console.log("Fetched Data:", data);
     
-                // Update products list
+             
                 const productListContainer = document.querySelector('.text-container:nth-of-type(2) ul');
                 if (productListContainer && data.bestSellingProducts) {
                     productListContainer.innerHTML = data.bestSellingProducts.map(product => `
@@ -355,7 +355,6 @@
                     `).join('');
                 }
                 
-                // Update categories list
                 const categoryListContainer = document.querySelector('.text-container:nth-of-type(1) ul');
                 if (categoryListContainer && data.bestSellingCategories) {
                     categoryListContainer.innerHTML = data.bestSellingCategories.map(category => `
@@ -366,7 +365,7 @@
                     `).join('');
                 }
     
-                // Render or update charts
+              
                 if (data.bestSellingProducts && data.bestSellingProducts.length > 0) {
                     const productLabels = data.bestSellingProducts.map(p => p.productName || "Unknown");
                     const productValues = data.bestSellingProducts.map(p => p.totalSold);
@@ -379,12 +378,11 @@
                     renderChart('categoriesChart', categoryLabels, categoryValues, 'Best Selling Categories', 'rgba(153, 102, 255, 0.6)', 'rgba(153, 102, 255, 1)');
                 }
                 
-                // Show content again
+                
                 document.querySelectorAll('.text-container ul, .chart-container canvas, .no-data').forEach(el => {
                     if (el) el.style.display = 'block';
                 });
-                
-                // Handle no data cases
+              
                 document.querySelectorAll('.no-data').forEach(el => el.style.display = 'none');
                 
                 if (!data.bestSellingProducts || data.bestSellingProducts.length === 0) {
@@ -401,14 +399,14 @@
                 console.error("Error fetching data:", error);
                 alert("Error fetching sales data. Please try again.");
                 
-                // Show error messages
+         
                 document.querySelectorAll('.no-data').forEach(el => {
                     el.textContent = 'Error loading data. Please try again.';
                     el.style.display = 'block';
                     el.style.color = '#ff0000';
                 });
             } finally {
-                // Remove loading indicators
+             
                 document.querySelectorAll('.text-container div, .chart-container div').forEach(el => {
                     if (el && el.textContent === 'Loading data...') {
                         el.remove();
@@ -420,7 +418,6 @@
         function renderChart(canvasId, labels, values, label, bgColor, borderColor) {
             const ctx = document.getElementById(canvasId).getContext('2d');
             
-            // Destroy existing chart if it exists
             if (canvasId === 'productsChart' && productsChart) {
                 productsChart.destroy();
             } else if (canvasId === 'categoriesChart' && categoriesChart) {
@@ -445,7 +442,7 @@
                     scales: {
                         x: {
             ticks: {
-                display: false // Hides product names
+                display: false 
             }
         },
                         y: {
@@ -470,7 +467,7 @@
                 }
             });
             
-            // Store the chart instance
+          
             if (canvasId === 'productsChart') {
                 productsChart = newChart;
             } else {
@@ -478,9 +475,9 @@
             }
         }
     
-        // Initialize charts when page loads
+       
         document.addEventListener("DOMContentLoaded", function() {
-            // Check if there's initial data from server-side rendering
+           
             const hasProductData = `<%= bestSellingProducts && bestSellingProducts.length > 0 %>`;
             const hasCategoryData =` <%= bestSellingCategories && bestSellingCategories.length > 0 %>`;
             
